@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Leslie Partnership OS — ricerca, analisi e gestione di partnership commerciali per turismo, nautica e ospitalità">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔱</text></svg>">
+    <link rel="manifest" href="/static/manifest.json">
+    <title>Leslie | Partnership OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css?v=2.0.0">
+</head>
+<body>
+<div id="app">
+    <!-- ─── SIDEBAR ─── -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-anchor"></i>
+            <span>LESLIE</span>
+        </div>
+        
+        <nav class="nav-menu">
+            <button type="button" class="nav-item active" data-view="clients">
+                <i class="fa-solid fa-people-group"></i>
+                <span>Clienti</span>
+            </button>
+            <button type="button" class="nav-item" data-view="sales">
+                <i class="fa-solid fa-sailboat"></i>
+                <span>Giri Barca &amp; Preventivi</span>
+            </button>
+            <button type="button" class="nav-item" data-view="venues">
+                <i class="fa-solid fa-utensils"></i>
+                <span>Ristoranti, Case &amp; QR</span>
+            </button>
+            <button type="button" class="nav-item" data-view="discovery">
+                <i class="fa-solid fa-compass"></i>
+                <span>Cerca Partner</span>
+            </button>
+            <button type="button" class="nav-item" data-view="leads">
+                <i class="fa-solid fa-crown"></i>
+                <span>I Miei Contatti</span>
+            </button>
+            <button type="button" class="nav-item" data-view="dashboard">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Pipeline</span>
+            </button>
+            <button type="button" class="nav-item" data-view="intelligence">
+                <i class="fa-solid fa-brain"></i>
+                <span>Panoramica</span>
+            </button>
+            <button type="button" class="nav-item" data-view="guide">
+                <i class="fa-solid fa-book-open"></i>
+                <span>Guida</span>
+            </button>
+            <button type="button" class="nav-item" data-view="settings">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Impostazioni</span>
+            </button>
+            <div class="nav-indicator" id="nav-indicator"></div>
+        </nav>
+
+        <div class="client-switcher">
+            <div class="client-switcher-label">Cliente attivo</div>
+            <button class="client-switcher-button" id="client-switcher-button" type="button">
+                <span class="client-switcher-icon"><i class="fa-solid fa-briefcase"></i></span>
+                <span class="client-switcher-copy">
+                    <strong id="active-client-name">Portafoglio personale</strong>
+                    <small id="active-client-meta">Tutti i dati storici</small>
+                </span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="client-menu" id="client-menu" hidden>
+                <div id="client-menu-list"></div>
+                <button type="button" class="client-menu-add" id="add-client-button">
+                    <i class="fa-solid fa-plus"></i> Nuovo cliente
+                </button>
+            </div>
+        </div>
+
+        <div class="user-profile" style="cursor:default;">
+            <div class="avatar" style="font-size:18px;">⚓</div>
+            <div class="user-info">
+                <div style="font-weight: 700; font-size: 14px;">Leslie</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Partnership OS</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ─── MAIN CONTENT ─── -->
+    <main class="main-layout">
+        <!-- Header -->
+        <header>
+            <div class="header-title">
+                <h1 id="view-title">Market Discovery</h1>
+                <p id="view-subtitle"><i class="fa-solid fa-circle-nodes animate-pulse" style="color: var(--accent); font-size: 8px;"></i> Leslie Intelligence è attiva e sta analizzando il mercato.</p>
+            </div>
+            <div class="header-actions" style="display:flex; align-items:center; gap:16px;">
+                <div id="cost-widget" class="cost-widget" title="Budget mensile stimato — clicca per dettagli" onclick="window.switchView && window.switchView('settings'); setTimeout(()=>{const t=document.querySelector('.settings-tab[data-tab=costs]'); if(t) t.click();}, 100);">
+                    <i class="fa-solid fa-coins"></i>
+                    <span id="cost-widget-value">—</span>
+                    <span id="cost-widget-pct" class="cost-widget-pct">—</span>
+                </div>
+                <button class="btn btn-ghost" id="followups-badge" style="display:none; padding:8px 14px;" onclick="window.switchView && window.switchView('leads'); setTimeout(()=>{const c=document.getElementById('leads-followups-toggle'); if(c){c.checked=true; filterLeads();}}, 100);">
+                    <i class="fa-solid fa-bell" style="color:#facc15;"></i>
+                    <span id="followups-count">0</span> follow-up
+                </button>
+                <button class="btn btn-primary" id="scout-btn">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Trova Partner</span>
+                </button>
+            </div>
+        </header>
+
+        <section id="client-profile-bar" class="client-profile-bar" hidden>
+            <div class="client-profile-main">
+                <span class="client-profile-kicker">Profilo commerciale attivo</span>
+                <strong id="client-profile-offer">—</strong>
+                <span id="client-profile-description">—</span>
+            </div>
+            <div class="client-profile-facts">
+                <span><i class="fa-solid fa-ship"></i> <b id="client-profile-boat">—</b></span>
+                <span><i class="fa-solid fa-users"></i> <b id="client-profile-capacity">—</b></span>
+                <span><i class="fa-solid fa-location-dot"></i> <b id="client-profile-area">—</b></span>
+            </div>
+            <button type="button" class="btn btn-ghost" id="edit-client-button"><i class="fa-solid fa-pen"></i> Modifica</button>
+        </section>
+
+        <!-- Clienti / onboarding -->
+        <section id="clients-view" class="view active">
+            <div class="clients-hero">
+                <div>
+                    <span class="portfolio-eyebrow"><i class="fa-solid fa-location-crosshairs"></i> Partnership control room</span>
+                    <h2>Una rotta commerciale per ogni cliente.</h2>
+                    <p>Leslie ti mostra chi seguire, dove cercare e quale collaborazione può funzionare adesso.</p>
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button class="btn btn-ghost" type="button" onclick="window.switchView('guide')"><i class="fa-solid fa-book-open"></i> Come si usa</button>
+                    <button class="btn btn-primary" id="clients-new-button"><i class="fa-solid fa-plus"></i> Nuovo cliente</button>
+                </div>
+            </div>
+            <div class="portfolio-pulse" id="portfolio-pulse">
+                <div><small>Clienti attivi</small><strong id="portfolio-client-count">—</strong></div>
+                <div><small>Opportunità</small><strong id="portfolio-lead-count">—</strong></div>
+                <div><small>In conversazione</small><strong id="portfolio-contacted-count">—</strong></div>
+                <div><small>Partnership</small><strong id="portfolio-partner-count">—</strong></div>
+                <p id="portfolio-focus">Sto preparando la priorità di oggi…</p>
+            </div>
+            <div id="clients-grid" class="clients-grid"></div>
+            <section class="network-panel" id="network-panel" hidden>
+                <div class="network-heading">
+                    <div><span>Rete interna</span><h3>Collaborazioni già davanti a te</h3></div>
+                    <p>Leslie collega clienti con pubblici complementari.</p>
+                </div>
+                <div class="network-grid" id="network-grid"></div>
+            </section>
+            <div class="how-it-works">
+                <div class="how-step"><span>1</span><div><strong>Scegli un cliente</strong><p>Controlla offerta, disponibilità, pubblico e territorio.</p></div></div>
+                <i class="fa-solid fa-arrow-right"></i>
+                <div class="how-step"><span>2</span><div><strong>Trova partner</strong><p>Leslie cerca e valuta aziende adatte a quel prodotto.</p></div></div>
+                <i class="fa-solid fa-arrow-right"></i>
+                <div class="how-step"><span>3</span><div><strong>Gestisci i contatti</strong><p>Invia proposte e aggiorna la pipeline commerciale.</p></div></div>
+            </div>
+        </section>
+
+        <!-- Guida operativa -->
+        <section id="guide-view" class="view">
+            <div class="guide-intro">
+                <span class="badge badge-gold">Manuale operativo</span>
+                <h2>Da cliente a nuovo partner, senza confondere i progetti</h2>
+                <p>Leslie lavora sempre per un cliente alla volta. Prima scegli il profilo, poi cerca aziende compatibili e segui i contatti fino alla collaborazione.</p>
+                <button class="btn btn-primary" type="button" onclick="window.switchView('clients')"><i class="fa-solid fa-people-group"></i> Vai ai clienti</button>
+            </div>
+
+            <div class="guide-section">
+                <div class="guide-heading"><span>01</span><div><h3>Il percorso completo</h3><p>Segui questi passaggi nell’ordine.</p></div></div>
+                <div class="guide-flow">
+                    <article><i class="fa-solid fa-user-check"></i><strong>Scegli il cliente</strong><p>Apri Clienti e premi “Apri piano”. Controlla offerta, disponibilità e territorio.</p></article>
+                    <article><i class="fa-solid fa-magnifying-glass-location"></i><strong>Cerca partner</strong><p>Apri Cerca Partner. Usa la ricerca automatica oppure scrivi una categoria specifica.</p></article>
+                    <article><i class="fa-solid fa-filter-circle-dollar"></i><strong>Valuta i risultati</strong><p>Leggi punteggio, motivazione e angolo commerciale. Salva solo aziende coerenti.</p></article>
+                    <article><i class="fa-solid fa-envelope-open-text"></i><strong>Contatta</strong><p>Nei contatti esegui l’audit, genera una bozza personalizzata e registra il follow-up.</p></article>
+                    <article><i class="fa-solid fa-chart-line"></i><strong>Aggiorna la pipeline</strong><p>Segna Contattato, Risposta, Meeting o Partner per sapere cosa sta funzionando.</p></article>
+                </div>
+            </div>
+
+            <div class="guide-section">
+                <div class="guide-heading"><span>02</span><div><h3>Ogni cliente richiede una strategia diversa</h3><p>Leslie adatta ricerca, valutazione e messaggio al profilo attivo.</p></div></div>
+                <div class="guide-personas">
+                    <article class="guide-persona">
+                        <div class="guide-persona-title"><span>G</span><div><h4>Gabri</h4><p>Barca in legno · massimo 6 ospiti</p></div></div>
+                        <h5>Cerca</h5>
+                        <div class="guide-tags"><span>Boutique hotel</span><span>Concierge</span><span>Wedding planner</span><span>Travel designer</span><span>Ville</span><span>Fotografi</span></div>
+                        <h5>Proponi</h5>
+                        <p>Un’esperienza privata, intima e autentica per coppie, famiglie premium e piccoli gruppi.</p>
+                        <h5>Evita</h5><p>Grandi gruppi, scuole, crociere ed eventi con più di 6 persone.</p>
+                    </article>
+                    <article class="guide-persona">
+                        <div class="guide-persona-title"><span>M</span><div><h4>Massi</h4><p>Navetta · massimo 40 ospiti</p></div></div>
+                        <h5>Cerca</h5>
+                        <div class="guide-tags"><span>DMC</span><span>Tour operator</span><span>Agenzie eventi</span><span>Hotel</span><span>Wedding planner</span><span>Incentive</span></div>
+                        <h5>Proponi</h5>
+                        <p>Escursioni ed eventi in mare per gruppi, aziende, matrimoni e viaggi organizzati.</p>
+                        <h5>Evita</h5><p>Gruppi oltre 40 persone e richieste esclusivamente ultra-private.</p>
+                    </article>
+                    <article class="guide-persona">
+                        <div class="guide-persona-title"><span>A</span><div><h4>Ale</h4><p>2 case vacanze · ospitalità boutique</p></div></div>
+                        <h5>Cerca</h5>
+                        <div class="guide-tags"><span>Travel designer</span><span>Concierge</span><span>Wedding planner</span><span>Fotografi</span><span>Esperienze locali</span></div>
+                        <h5>Proponi</h5>
+                        <p>Due soggiorni curati e personali per coppie, famiglie e piccoli gruppi che cercano il territorio.</p>
+                        <h5>Evita</h5><p>Grandi gruppi e canali che richiedono molto inventario o offerte mass-market.</p>
+                    </article>
+                    <article class="guide-persona">
+                        <div class="guide-persona-title"><span>C</span><div><h4>Cosimo</h4><p>10 case vacanze · ospitalità diffusa</p></div></div>
+                        <h5>Cerca</h5>
+                        <div class="guide-tags"><span>DMC</span><span>Tour operator</span><span>Wedding planner</span><span>Retreat</span><span>Agenzie eventi</span></div>
+                        <h5>Proponi</h5>
+                        <p>Dieci proprietà coordinate per gruppi, invitati, famiglie ed eventi intorno al promontorio.</p>
+                        <h5>Evita</h5><p>Richieste fuori territorio o superiori alla disponibilità reale delle proprietà.</p>
+                    </article>
+                </div>
+            </div>
+
+            <div class="guide-section">
+                <div class="guide-heading"><span>03</span><div><h3>Cosa significano le sezioni</h3><p>Una mappa rapida del menu.</p></div></div>
+                <div class="guide-menu-map">
+                    <button onclick="window.switchView('clients')"><i class="fa-solid fa-people-group"></i><span><strong>Clienti</strong><small>Scegli o modifica il progetto.</small></span></button>
+                    <button onclick="window.switchView('discovery')"><i class="fa-solid fa-compass"></i><span><strong>Cerca Partner</strong><small>Trova nuove aziende compatibili.</small></span></button>
+                    <button onclick="window.switchView('leads')"><i class="fa-solid fa-crown"></i><span><strong>I miei contatti</strong><small>Audit, email, note e follow-up.</small></span></button>
+                    <button onclick="window.switchView('dashboard')"><i class="fa-solid fa-chart-line"></i><span><strong>Pipeline</strong><small>Misura contatti, risposte e partner.</small></span></button>
+                    <button onclick="window.switchView('intelligence')"><i class="fa-solid fa-brain"></i><span><strong>Panoramica</strong><small>Scopri nicchie e ricerche efficaci.</small></span></button>
+                    <button onclick="window.switchView('settings')"><i class="fa-solid fa-sliders"></i><span><strong>Impostazioni</strong><small>Limiti, settori e budget.</small></span></button>
+                </div>
+            </div>
+
+            <div class="guide-section guide-checklist">
+                <div class="guide-heading"><span>04</span><div><h3>Routine consigliata</h3><p>Una sessione semplice da ripetere per ogni cliente.</p></div></div>
+                <label><input type="checkbox"> Ho selezionato il cliente corretto</label>
+                <label><input type="checkbox"> Ho controllato offerta, disponibilità e capienza</label>
+                <label><input type="checkbox"> Ho avviato una ricerca mirata</label>
+                <label><input type="checkbox"> Ho salvato solo partner coerenti</label>
+                <label><input type="checkbox"> Ho preparato email e prossimo follow-up</label>
+                <label><input type="checkbox"> Ho aggiornato gli stati nella pipeline</label>
+            </div>
+        </section>
+
+        <!-- Discovery View (Market Radar Hub) -->
+        <section id="discovery-view" class="view">
+            <div class="client-required-banner" id="client-required-banner" hidden>
+                <span><i class="fa-solid fa-shield-halved"></i></span>
+                <div><strong>Prima scegli un cliente</strong><p>Il portafoglio personale è una vista aggregata: non può contenere nuove ricerche o contatti.</p></div>
+                <button class="btn btn-primary" type="button" onclick="window.switchView('clients')">Scegli cliente</button>
+            </div>
+            <div class="mission-card" id="mission-card" hidden>
+                <div class="mission-copy">
+                    <span>Missione attiva</span>
+                    <h3 id="mission-title">—</h3>
+                    <p id="mission-focus">—</p>
+                </div>
+                <div class="mission-queries">
+                    <small>Ricerche consigliate</small>
+                    <div id="mission-query-list" class="mission-query-list"></div>
+                </div>
+            </div>
+            <div class="grid" style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 32px;">
+                
+                <!-- Strategic Overview (Left) -->
+                <div class="card card-large" style="grid-column: span 8; background: linear-gradient(135deg, rgba(17, 34, 64, 0.8) 0%, rgba(2, 12, 27, 0.9) 100%);">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:30px;">
+                        <div>
+                            <span class="badge badge-gold">Intelligence Attiva</span>
+                            <h2 style="margin-top: 10px; font-family: 'Outfit'; font-size: 24px; color: var(--accent);">Settori Monitorati</h2>
+                            <p style="font-size: 14px; color: var(--text-muted);">Clicca su una nicchia per cercare partner in quel settore</p>
+                        </div>
+                        <button class="btn btn-ghost" id="refresh-queries" style="padding: 10px;">
+                            <i class="fa-solid fa-rotate fa-spin-hover"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="learned-niches" class="niche-grid">
+                        <!-- Populated by JS -->
+                        <div class="niche-chip">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Inizia lo scouting per scoprire nicchie</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="stat-item" style="border-left: 2px solid var(--accent); padding-left: 20px;">
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Copertura Mercato</div>
+                            <div style="display:flex; align-items:center; gap: 15px; margin-top: 8px;">
+                                <div style="flex:1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden;">
+                                    <div id="coverage-bar" style="width: 0%; height: 100%; background: var(--accent); transition: width 1s;"></div>
+                                </div>
+                                <span id="coverage-percent" style="font-weight: 700; color: var(--accent); font-family: 'Outfit';">0%</span>
+                            </div>
+                        </div>
+                        <div class="stat-item" style="border-left: 2px solid #4ade80; padding-left: 20px;">
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Opportunità analizzate</div>
+                            <div id="stats-total-leads" style="font-size: 28px; font-weight: 700; font-family: 'Outfit'; margin-top: 5px;">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Radar Control (Right) -->
+                <div class="card card-medium" style="grid-column: span 4; display: flex; flex-direction: column; justify-content: space-between; border-color: rgba(197, 160, 89, 0.2);">
+                    <div>
+                        <h3 style="font-family: 'Outfit'; font-size: 18px; margin-bottom: 8px;">Ricerca Automatica</h3>
+                        <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">Avvia la ricerca automatica per scoprire nuovi partner analizzati dall'AI in tempo reale.</p>
+                    </div>
+                    
+                    <div style="text-align: center; padding: 30px 0;">
+                        <div class="animate-pulse" style="width: 90px; height: 90px; background: radial-gradient(circle, rgba(197, 160, 89, 0.15) 0%, transparent 70%); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(197, 160, 89, 0.1);">
+                            <i class="fa-solid fa-satellite-dish" style="font-size: 36px; color: var(--accent);"></i>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 10px; color: var(--accent); font-weight: 800; letter-spacing: 2px; text-transform: uppercase;">Ready to Scan</div>
+                    </div>
+
+                    <button class="btn btn-primary" id="scout-btn-main" onclick="document.getElementById('scout-btn').click()" style="width:100%; justify-content: center; padding: 18px; font-size: 16px;">
+                        <i class="fa-solid fa-bolt"></i> Avvia Ricerca
+                    </button>
+                </div>
+
+                <!-- Visual Discovery Wall (Bottom) -->
+                <div class="card card-full" style="background: transparent; border: none; box-shadow: none; padding: 40px 0 0 0;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 35px; border-bottom: 1px solid var(--border); padding-bottom: 20px;">
+                        <div>
+                            <h2 style="font-family: 'Outfit'; font-size: 32px; letter-spacing: -1px; margin-bottom: 5px;">Risultati Ricerca</h2>
+                            <p style="font-size: 14px; color: var(--text-muted);">Cerca una nicchia specifica o avvia la ricerca automatica</p>
+                        </div>
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <div style="position: relative;">
+                                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px;"></i>
+                                <input type="text" id="search-input" class="search-input" placeholder="Cerca nicchia specifica..." style="padding-left: 45px; width: 300px; background: rgba(0,0,0,0.2);">
+                            </div>
+                            <button class="btn btn-primary" id="search-btn" style="padding: 14px 24px;">Cerca</button>
+                        </div>
+                    </div>
+                    
+                    <div id="discovery-results" style="min-height: 450px;">
+                        <!-- Visual Feed populated by JS -->
+                        <div class="loader-container">
+                            <div class="loader"></div>
+                            <p style="margin-top:20px; color: var(--text-muted);">Leslie sta caricando i segnali di mercato...</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Leads View -->
+        <section id="leads-view" class="view">
+            <div class="card card-full">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="font-family: 'Outfit';">Opportunità salvate</h2>
+                    <a href="/api/export" id="export-link" class="btn btn-primary">
+                        <i class="fa-solid fa-file-excel"></i>
+                        <span>Esporta Contatti</span>
+                    </a>
+                </div>
+                <div id="leads-status-summary" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;"></div>
+                <div id="leads-toolbar" style="display:flex; gap:12px; align-items:center; margin-bottom:24px; flex-wrap:wrap;">
+                    <div style="position:relative; flex:1; min-width:200px;">
+                        <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:13px;"></i>
+                        <input type="text" id="leads-search" class="search-input" placeholder="Cerca per nome..." style="width:100%; padding-left:40px; background:rgba(0,0,0,0.2);" oninput="filterLeads()">
+                    </div>
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; padding:8px 16px; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:10px; font-size:12px; color:var(--text-muted); white-space:nowrap;">
+                        <input type="checkbox" id="leads-premium-toggle" onchange="filterLeads()" style="accent-color:var(--accent);">
+                        <i class="fa-solid fa-crown" style="color:var(--accent); font-size:11px;"></i>
+                        Compatibilità alta
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; padding:8px 16px; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:10px; font-size:12px; color:var(--text-muted); white-space:nowrap;">
+                        <input type="checkbox" id="leads-followups-toggle" onchange="filterLeads()" style="accent-color:#facc15;">
+                        <i class="fa-solid fa-bell" style="color:#facc15; font-size:11px;"></i>
+                        Solo Follow-up
+                    </label>
+                    <select id="leads-status-filter" onchange="filterLeads()" style="padding:8px 12px; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:10px; font-size:12px; color:var(--text-main);">
+                        <option value="">Tutti gli stati</option>
+                        <option value="saved">Salvato</option>
+                        <option value="contacted">Contattato</option>
+                        <option value="replied">Ha risposto</option>
+                        <option value="meeting">Meeting</option>
+                        <option value="partner">Partner attivo</option>
+                        <option value="rejected">Scartato</option>
+                    </select>
+                </div>
+                <div id="saved-leads-list" class="lead-list">
+                    <!-- Caricato dinamicamente -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard / Pipeline View -->
+        <section id="dashboard-view" class="view">
+            <div id="dashboard-content">
+                <div class="loader-container"><div class="loader"></div><p style="margin-top:20px; color: var(--text-muted);">Calcolo funnel commerciale…</p></div>
+            </div>
+        </section>
+
+        <!-- Intelligence View -->
+        <section id="intelligence-view" class="view">
+            <!-- Market Overview Stats -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px;">
+                <div class="card stat-center">
+                    <div class="label-uppercase">Lead Totali</div>
+                    <div style="font-size: 24px; font-weight: 700; color: var(--accent);" id="intel-stats-leads">0</div>
+                </div>
+                <div class="card stat-center">
+                    <div class="label-uppercase">Nicchie Validate</div>
+                    <div style="font-size: 24px; font-weight: 700;" id="intel-stats-niches">0</div>
+                </div>
+                <div class="card stat-center">
+                    <div class="label-uppercase">Query Effettuate</div>
+                    <div style="font-size: 24px; font-weight: 700;" id="intel-stats-queries">0</div>
+                </div>
+                <div class="card stat-center">
+                    <div class="label-uppercase">Lead Premium</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #4ade80;" id="intel-stats-premium">0</div>
+                </div>
+            </div>
+
+            <!-- Market Pulse (Analytics) -->
+            <div class="card card-full" style="margin-bottom: 30px; padding: 25px; background: rgba(0,0,0,0.2);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                    <h3 style="font-family: 'Outfit'; font-size: 18px;">Market Pulse <span style="font-size:12px; color:var(--text-muted); font-weight:400; margin-left:10px;">(Ultimi 14 giorni)</span></h3>
+                    <div id="pulse-total-label" style="font-size: 12px; color: var(--accent); font-weight: 700;">+0 Lead Premium</div>
+                </div>
+                <div id="market-pulse-chart" style="height: 80px; display: flex; align-items: flex-end; gap: 8px; padding-bottom: 10px;">
+                    <!-- Chart Bars populated by JS -->
+                </div>
+            </div>
+
+            <div class="bento-grid">
+                <div class="card card-large">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h2 style="font-family: 'Outfit';">Nicchie Apprese</h2>
+                            <span style="font-size: 11px; color: var(--accent); font-weight: 700; letter-spacing: 1px;">
+                                <i class="fa-solid fa-circle-dot animate-pulse"></i> LIVE LEARNING ENGINE
+                            </span>
+                        </div>
+                        <button class="btn btn-ghost" onclick="loadIntelligenceView()">
+                            <i class="fa-solid fa-sync fa-spin-hover"></i>
+                        </button>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">
+                        Leslie analizza ogni interazione per mappare il mercato. Queste nicchie rappresentano segmenti ad alto potenziale dove Leslie ha identificato pattern di successo.
+                    </p>
+                    <div id="intelligence-niches" style="display:flex; flex-direction:column; gap:20px;">
+                        <!-- Caricato dinamicamente -->
+                    </div>
+                </div>
+                <div class="card card-medium">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="font-family:'Outfit';">Cronologia Ricerche</h3>
+                        <button class="btn btn-ghost" style="padding: 5px 10px; font-size: 11px;" onclick="loadIntelligenceView()">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                    </div>
+                    <div id="search-history-list" style="display:flex; flex-direction:column; gap:0; max-height:600px; overflow-y:auto;">
+                        <!-- Caricato dinamicamente -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Strategy/Settings View -->
+        <section id="settings-view" class="view">
+            <div class="card card-large">
+                <!-- Tab Navigation -->
+                <div class="settings-tab-bar">
+                    <button class="settings-tab active" data-tab="sectors">
+                        <i class="fa-solid fa-sliders"></i> <span>Settori</span>
+                    </button>
+                    <button class="settings-tab" data-tab="queries">
+                        <i class="fa-solid fa-magnifying-glass-location"></i> <span>Ricerche</span>
+                    </button>
+                    <button class="settings-tab" data-tab="params">
+                        <i class="fa-solid fa-gauge-high"></i> <span>Parametri</span>
+                    </button>
+                    <button class="settings-tab" data-tab="costs">
+                        <i class="fa-solid fa-coins"></i> <span>Costi</span>
+                    </button>
+                </div>
+
+                <!-- Dynamic Panel Content (rendered by JS) -->
+                <div id="settings-panel-content"></div>
+
+                <!-- Scout Controls -->
+                <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--border);">
+                    <!-- Pre-launch controls -->
+                    <div id="scout-prelaunch" style="display:flex; gap:24px; align-items:flex-end; flex-wrap:wrap; justify-content:center; margin-bottom:24px;">
+                        <div style="flex:1; min-width:200px; max-width:300px;">
+                            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">
+                                Risultati da analizzare: <strong id="max-results-label" style="color:var(--accent);">10</strong>
+                            </label>
+                            <input type="range" id="max-results-slider" min="1" max="20" value="10" style="width:100%; accent-color:var(--accent);"
+                                   oninput="document.getElementById('max-results-label').textContent=this.value; document.getElementById('cost-estimate').textContent='~$'+(0.017+(parseInt(this.value)*0.018)).toFixed(3)">
+                            <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted);">
+                                <span>1 (economico)</span>
+                                <span>20 (approfondito)</span>
+                            </div>
+                        </div>
+                        <div style="flex:1; min-width:200px; max-width:300px;">
+                            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">
+                                Soglia minima score: <strong id="min-score-label" style="color:var(--accent);">0</strong>/10
+                            </label>
+                            <input type="range" id="min-score-slider" min="0" max="10" value="0" style="width:100%; accent-color:var(--accent);"
+                                   oninput="document.getElementById('min-score-label').textContent=this.value">
+                            <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted);">
+                                <span>0 (salva tutti)</span>
+                                <span>10 (solo eccellenti)</span>
+                            </div>
+                        </div>
+                        <div style="text-align:center; min-width:120px;">
+                            <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Costo stimato</div>
+                            <div id="cost-estimate" style="font-size:18px; font-weight:700; color:var(--accent); font-family:'Outfit';">~$0.197</div>
+                        </div>
+                    </div>
+                    <div style="text-align:center;">
+                        <button class="btn btn-primary" id="start-strategy-btn" style="padding: 15px 30px; font-size: 16px; width: 100%; max-width: 400px;">
+                            <i class="fa-solid fa-play"></i>
+                            <span>Avvia Ricerca Automatica</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Console (detailed) -->
+                <div id="strategy-console" class="card" style="margin-top: 30px; background: #0a0a0a; border: 1px solid #333; display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 10px;">
+                        <span style="font-family: monospace; color: var(--accent); font-size: 12px; font-weight: bold;">LESLIE STRATEGY ENGINE v2.0</span>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span id="scout-progress-text" style="font-size:11px; color:var(--text-muted); font-family:monospace;"></span>
+                            <div id="strategy-progress-dots" class="animate-pulse" style="width: 8px; height: 8px; background: var(--accent); border-radius: 50%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Query Selection Info -->
+                    <div id="query-selection-box" style="display:none; background:rgba(197,160,89,0.08); border:1px solid rgba(197,160,89,0.2); border-radius:12px; padding:16px; margin-bottom:16px;">
+                    </div>
+
+                    <!-- Step-by-step analysis cards -->
+                    <div id="console-steps" style="display:flex; flex-direction:column; gap:8px; max-height:600px; overflow-y:auto;">
+                    </div>
+
+                    <!-- Legacy text output for status messages -->
+                    <div id="console-output" style="font-family: 'Courier New', monospace; font-size: 12px; color: #666; min-height: 40px; max-height: 150px; overflow-y: auto; line-height: 1.6; margin-top:12px; padding:10px; background:rgba(0,0,0,0.3); border-radius:8px;">
+                    </div>
+
+                    <div id="strategy-live-results" style="margin-top: 20px; display: grid; grid-template-columns: 1fr; gap: 10px;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leslie 2.0: Giri in Barca & Preventivi View -->
+        <section id="sales-view" class="view">
+            <div id="sales-view-content">
+                <div class="loader-container"><div class="loader"></div><p style="margin-top:20px; color: var(--text-muted);">Caricamento Banco Vendite &amp; Dispatcher Barche…</p></div>
+            </div>
+        </section>
+
+        <!-- Leslie 2.0: Ristoranti, Case Vacanza & Portali QR View -->
+        <section id="venues-view" class="view">
+            <div id="venues-view-content">
+                <div class="loader-container"><div class="loader"></div><p style="margin-top:20px; color: var(--text-muted);">Caricamento Ristoranti Partner, Case Vacanza &amp; Portali QR…</p></div>
+            </div>
+        </section>
+    </main>
+
+
+    <!-- Lead Detail Modal -->
+    <div id="lead-detail-modal" style="display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); overflow-y:auto; padding:40px 20px;">
+        <div id="lead-detail-content" style="max-width:800px; margin:0 auto;"></div>
+    </div>
+
+    <div id="client-modal" class="client-modal" role="dialog" aria-modal="true" aria-labelledby="client-form-title" hidden>
+        <form id="client-form" class="client-form">
+            <button type="button" class="client-modal-close" id="client-modal-close" aria-label="Chiudi">×</button>
+            <span class="badge badge-gold" id="client-form-badge">Nuovo progetto</span>
+            <h2 id="client-form-title">Per quale cliente cerchiamo partner?</h2>
+            <p>Queste informazioni guidano Leslie e tengono separati risultati, contatti e pipeline.</p>
+            <div class="client-form-grid">
+                <label>Nome cliente <input name="name" required maxlength="80" placeholder="Es. Villa Aurora"></label>
+                <label>Tipo di attività
+                    <select name="business_type">
+                        <option value="nautical">Nautica ed esperienze in mare</option>
+                        <option value="hospitality">Case vacanze e ospitalità</option>
+                        <option value="experience">Esperienze e servizi</option>
+                        <option value="other">Altro</option>
+                    </select>
+                </label>
+            </div>
+            <div class="client-form-grid">
+                <label>Settore <input name="sector" placeholder="Hospitality di lusso"></label>
+                <label>Area geografica <input name="geography" placeholder="Italia, Costa Azzurra"></label>
+            </div>
+            <label>Nome dell’offerta <input name="offer_name" placeholder="Tour privato nella baia di Portofino"></label>
+            <div class="client-form-grid">
+                <label><span id="client-asset-label">Mezzo o struttura</span><input name="boat_type" placeholder="Barca in legno, case vacanze…"></label>
+                <label><span id="client-inventory-label">Numero di mezzi o strutture</span><input name="inventory_count" type="number" min="1" max="500" value="1"></label>
+            </div>
+            <div class="client-form-grid">
+                <label><span id="client-capacity-label">Capienza massima</span><input name="max_guests" type="number" min="1" max="500" placeholder="6"></label>
+                <label>Posizionamento <input name="price_positioning" placeholder="Premium, accessibile, gruppi…"></label>
+            </div>
+            <label>Stile dell’esperienza <input name="experience_style" placeholder="Intima e autentica, gruppi ed eventi…"></label>
+            <label>Cliente finale ideale <textarea name="target_customer" rows="2" placeholder="Coppie, famiglie premium, aziende, gruppi…"></textarea></label>
+            <label>Partner ideali <textarea name="ideal_partner" rows="3" placeholder="Wedding planner, concierge, travel designer…"></textarea></label>
+            <label>Da escludere <textarea name="exclusions" rows="2" placeholder="Competitor diretti, attività fuori target…"></textarea></label>
+            <div class="client-form-grid">
+                <label>Obiettivo principale <textarea name="primary_goal" rows="2" placeholder="Aumentare prenotazioni dirette, riempire gruppi…"></textarea></label>
+                <label>Perché sceglierlo <textarea name="differentiators" rows="2" placeholder="Posizione, stile, servizio, unicità…"></textarea></label>
+            </div>
+            <label>Stagionalità <input name="seasonality" placeholder="Aprile–ottobre, tutto l’anno…"></label>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> <span id="client-form-submit-label">Crea spazio cliente</span></button>
+        </form>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Budget alert (>=80%) -->
+    <div id="budget-alert" class="budget-alert" style="display:none;">
+        <div class="budget-alert-inner">
+            <i class="fa-solid fa-triangle-exclamation" style="color:#facc15; font-size:20px;"></i>
+            <div class="budget-alert-body">
+                <div style="font-weight:700; font-size:14px;">Budget mensile quasi esaurito</div>
+                <div id="budget-alert-detail" style="font-size:12px; color:var(--text-muted); margin-top:4px;"></div>
+            </div>
+            <button class="btn btn-ghost" onclick="document.getElementById('budget-alert').style.display='none'" style="padding:6px 10px;">×</button>
+        </div>
+    </div>
+</div>
+
+    <div class="status-indicator">
+        <div class="status-dot offline" id="sync-dot"></div>
+        <span id="sync-status">Leslie Cloud Sync: …</span>
+    </div>
+
+    <script src="/static/app.js?v=2.0.0"></script>
+</body>
+</html>

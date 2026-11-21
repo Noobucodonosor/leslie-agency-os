@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="{{ booking.customer_language or 'it' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ booking.offer_title }} | Proposta Riservata {{ booking.public_token }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-deep: #06101f;
+            --bg-card: #0e1e36;
+            --gold: #c5a059;
+            --gold-light: #e2c280;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --green: #4ade80;
+            --border: rgba(197, 160, 89, 0.22);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: radial-gradient(circle at top, #102544 0%, var(--bg-deep) 65%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 24px 16px 60px;
+            line-height: 1.6;
+        }
+        .container { max-width: 680px; margin: 0 auto; }
+        .top-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(197, 160, 89, 0.14); border: 1px solid var(--border);
+            color: var(--gold-light); padding: 6px 14px; border-radius: 999px;
+            font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .offer-card {
+            background: linear-gradient(160deg, rgba(16, 36, 64, 0.96), rgba(8, 18, 34, 0.98));
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px 26px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+        }
+        h1 { font-family: 'Outfit', sans-serif; font-size: 28px; line-height: 1.25; margin-bottom: 10px; }
+        .greeting { color: var(--text-muted); font-size: 15px; margin-bottom: 24px; }
+        .meta-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px; margin-bottom: 24px;
+        }
+        .meta-tile {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px; padding: 14px;
+        }
+        .meta-tile small { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
+        .meta-tile strong { font-size: 15px; color: var(--text-main); margin-top: 4px; display: block; }
+        .section-block {
+            background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 18px; padding: 20px; margin-bottom: 16px;
+        }
+        .section-block h3 {
+            font-family: 'Outfit', sans-serif; font-size: 17px; color: var(--gold-light);
+            display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+        }
+        .section-block p { font-size: 14px; color: var(--text-muted); }
+        .price-summary {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 22px; background: rgba(197, 160, 89, 0.1);
+            border: 1px solid var(--gold); border-radius: 18px; margin: 24px 0;
+        }
+        .price-summary .total { font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 700; color: var(--gold-light); }
+        .btn-confirm {
+            width: 100%; border: none; cursor: pointer;
+            background: linear-gradient(135deg, #d4af64 0%, #b3893c 100%);
+            color: #06101f; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 17px;
+            padding: 16px 24px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: transform 0.15s, opacity 0.2s;
+        }
+        .btn-confirm:hover { transform: translateY(-1px); }
+        .confirmed-banner {
+            background: rgba(74, 222, 128, 0.14); border: 1px solid var(--green);
+            color: var(--green); border-radius: 14px; padding: 16px; text-align: center;
+            font-weight: 700; margin-bottom: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div style="text-align:center; margin-bottom:18px;">
+        <span class="top-badge"><i class="fa-solid fa-anchor"></i> Portofino &amp; Golfo del Tigullio · {{ booking.public_token }}</span>
+    </div>
+
+    <div class="offer-card">
+        <h1>{{ booking.offer_title }}</h1>
+        <p class="greeting">
+            Proposta riservata per <strong>{{ booking.customer_name }}</strong>
+            {% if booking.source_portal_slug %} · Partner: <strong>{{ booking.source_portal_slug }}</strong>{% endif %}
+        </p>
+
+        <div class="meta-grid">
+            <div class="meta-tile">
+                <small><i class="fa-regular fa-calendar"></i> Data</small>
+                <strong>{{ booking.event_date or 'Da concordare' }}</strong>
+            </div>
+            <div class="meta-tile">
+                <small><i class="fa-regular fa-clock"></i> Fascia</small>
+                <strong>{{ booking.time_slot_label }}</strong>
+            </div>
+            <div class="meta-tile">
+                <small><i class="fa-solid fa-users"></i> Ospiti</small>
+                <strong>{{ booking.guests_count }} persone</strong>
+            </div>
+            <div class="meta-tile">
+                <small><i class="fa-solid fa-ship"></i> Comandante / Host</small>
+                <strong>{{ (booking.operator_name or booking.assigned_operator)|capitalize }}</strong>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <h3><i class="fa-solid fa-compass"></i> Esperienza in Mare</h3>
+            <p><strong>Mezzo riservato:</strong> {{ booking.vessel_or_property or 'Imbarcazione riservata in esclusiva' }}</p>
+            {% if booking.route_summary %}
+            <p style="margin-top:6px;"><strong>Itinerario:</strong> {{ booking.route_summary }}</p>
+            {% endif %}
+            {% if booking.includes_text %}
+            <p style="margin-top:6px;"><strong>Incluso a bordo:</strong> {{ booking.includes_text }}</p>
+            {% endif %}
+        </div>
+
+        {% if booking.restaurant_name %}
+        <div class="section-block" style="border-color: rgba(74, 222, 128, 0.35);">
+            <h3 style="color: #4ade80;"><i class="fa-solid fa-utensils"></i> Tavolo sul Mare Riservato (Boat-to-Table)</h3>
+            <p><strong>{{ booking.restaurant_name }}</strong> · Tavolo per {{ booking.restaurant_covers or booking.guests_count }} ospiti alle ore {{ booking.restaurant_time or '13:30' }} con sbarco diretto dalla barca.</p>
+            <p style="font-size:12px; margin-top:4px; opacity:0.85;">Il conto del ristorante si salda direttamente al tavolo in base a ciò che sceglierete dal menu.</p>
+        </div>
+        {% endif %}
+
+        {% if booking.stay_name and booking.stay_nights > 0 %}
+        <div class="section-block" style="border-color: rgba(103, 197, 184, 0.35);">
+            <h3 style="color: #67c5b8;"><i class="fa-solid fa-house-chimney-window"></i> Soggiorno Abbinato ({{ booking.stay_nights }} notti)</h3>
+            <p><strong>{{ booking.stay_name }}</strong> — €{{ booking.stay_price_eur }} complessivi per il soggiorno.</p>
+        </div>
+        {% endif %}
+
+        <div class="price-summary">
+            <div>
+                <div style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Totale Esperienza</div>
+                <div style="font-size:13px; color:var(--text-muted);">
+                    Barca €{{ booking.boat_price_eur }}{% if booking.stay_price_eur %} + Soggiorno €{{ booking.stay_price_eur }}{% endif %}
+                </div>
+            </div>
+            <div class="total">€{{ booking.total_price_eur }}</div>
+        </div>
+
+        <div id="confirm-area">
+            {% if booking.status in ('confirmed', 'completed') %}
+            <div class="confirmed-banner">
+                <i class="fa-solid fa-circle-check"></i> Prenotazione Confermata! Ti aspettiamo a bordo.
+            </div>
+            {% else %}
+            <button type="button" class="btn-confirm" id="confirm-btn" onclick="confirmOffer()">
+                <i class="fa-solid fa-check"></i> Conferma questa Esperienza
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+async function confirmOffer() {
+    const btn = document.getElementById('confirm-btn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Conferma in corso...'; }
+    try {
+        const r = await fetch('/api/public/offer/{{ booking.public_token }}/confirm', { method: 'POST' });
+        if (r.ok) {
+            document.getElementById('confirm-area').innerHTML = `
+                <div class="confirmed-banner">
+                    <i class="fa-solid fa-circle-check"></i> Prenotazione Confermata! Riceverai a breve i dettagli d'imbarco.
+                </div>`;
+        }
+    } catch (e) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Riprova Conferma'; }
+    }
+}
+</script>
+</body>
+</html>

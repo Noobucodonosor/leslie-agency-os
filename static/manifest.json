@@ -1,0 +1,16 @@
+{
+  "name": "Leslie — Partnership OS",
+  "short_name": "Leslie",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080d19",
+  "theme_color": "#080d19",
+  "description": "Ricerca, analisi e gestione di partnership commerciali per turismo, nautica e ospitalità",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23111827'/><text x='50' y='65' text-anchor='middle' font-size='50'>⛵</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

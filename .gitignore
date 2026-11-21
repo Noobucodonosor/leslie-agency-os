@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+venv314/
+.venv/
+.env
+
+# Scratch / experimental
+scratch/
+exports/
+
+# Database
+*.sqlite
+*.csv
+
+# Logs
+*.log
+
+# Docker
+.dockerignore
+
+# OS
+.DS_Store

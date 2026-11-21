@@ -1,0 +1,95 @@
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "agency_db.sqlite")
+
+QUERY_POOLS = {
+    "🏨 Hotel & Resort (chi consiglia le barche agli ospiti)": [
+        "hotel 5 stelle Portofino",
+        "luxury hotel Santa Margherita Ligure",
+        "boutique hotel Rapallo",
+        "resort lusso Camogli",
+        "hotel lusso Sestri Levante",
+        "luxury resort Genova Nervi",
+        "five star hotel Cinque Terre",
+        "luxury hotel Paraggi",
+        "Splendido hotel Portofino",
+        "Grand Hotel Miramare Santa Margherita",
+        "hotel Excelsior Palace Rapallo",
+        "charming luxury hotel Levante Ligure",
+    ],
+    "🌍 DMC & Incoming Italia (organizzano esperienze per stranieri)": [
+        "incoming tour operator Roma luxury",
+        "DMC Italia esperienze lusso",
+        "destination management company Milano",
+        "incoming agency Firenze luxury experiences",
+        "DMC Liguria Genova incoming",
+        "tour operator incoming Italia esperienze nautiche",
+        "incoming luxury experiences Napoli",
+        "receptive tour operator Italy VIP",
+        "Italy inbound tour operator luxury",
+        "DMC Italia boat experiences",
+    ],
+    "🇺🇸🇬🇧 Agenzie estere specializzate Italia": [
+        "Italy luxury travel specialist New York",
+        "bespoke Italy holidays London agency",
+        "tailor made Italy tours luxury",
+        "Italian Riviera travel specialist",
+        "Italy luxury vacation planner",
+        "Virtuoso travel advisor Italy",
+        "luxury Italy honeymoon travel agency",
+        "Italy private tours luxury small group",
+        "Italian coast luxury travel",
+        "Amalfi Portofino luxury travel agency",
+    ],
+    "💍 Wedding & Eventi Liguria (hanno bisogno di barche per ospiti)": [
+        "wedding planner Portofino",
+        "luxury wedding organizer Liguria",
+        "destination wedding Italian Riviera",
+        "event planner luxury Genova",
+        "wedding planner Santa Margherita Ligure",
+        "matrimonio lusso Portofino organizzazione",
+        "luxury event planner Cinque Terre",
+        "corporate event planner Liguria yacht",
+    ],
+    "⛵ Charter & Broker Nautici (collaborano o sub-appaltano)": [
+        "yacht charter broker Genova",
+        "noleggio barche lusso Portofino",
+        "boat charter Italian Riviera",
+        "charter nautico Santa Margherita Ligure",
+        "yacht broker Mediterranean Liguria",
+        "luxury boat rental Cinque Terre",
+        "boat excursion Portofino",
+        "charter barche Tigullio",
+    ],
+    "🏢 Corporate & MICE (incentive trip con budget alto)": [
+        "corporate incentive travel Italy luxury",
+        "MICE agency Italy experiences",
+        "team building luxury Liguria",
+        "corporate retreat Italy coast",
+        "incentive travel Portofino",
+        "azienda organizzazione eventi aziendali Genova",
+        "luxury corporate hospitality Italy",
+    ],
+    "💎 Concierge & Lifestyle (clienti ultra-high-net-worth)": [
+        "luxury concierge service Milano",
+        "VIP concierge Roma experiences",
+        "personal concierge Italia luxury",
+        "lifestyle management company Italy",
+        "luxury travel concierge Firenze",
+        "private concierge Côte d'Azur Italy",
+        "luxury personal assistant travel Italy",
+        "quintessentially Italy concierge",
+    ],
+}
+
+# Pesi di default per il suggeritore (1 = normale, 5 = prioritario, 0 = disattivato)
+CATEGORY_WEIGHTS = {
+    "🏨 Hotel & Resort (chi consiglia le barche agli ospiti)": 5,
+    "🌍 DMC & Incoming Italia (organizzano esperienze per stranieri)": 3,
+    "🇺🇸🇬🇧 Agenzie estere specializzate Italia": 4,
+    "💍 Wedding & Eventi Liguria (hanno bisogno di barche per ospiti)": 2,
+    "⛵ Charter & Broker Nautici (collaborano o sub-appaltano)": 1,
+    "🏢 Corporate & MICE (incentive trip con budget alto)": 2,
+    "💎 Concierge & Lifestyle (clienti ultra-high-net-worth)": 4,
+}
