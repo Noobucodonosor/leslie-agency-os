@@ -3,341 +3,586 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Leslie — Agency OS (Demo Interattiva)</title>
-  <meta name="description" content="Piattaforma B2B di scouting autonomo SSE, qualificazione AI (DeepSeek) e CRM multi-tenant per nautica, ospitalità ed esperienze premium.">
-  <meta property="og:title" content="Leslie — Agency OS">
-  <meta property="og:description" content="Scouting autonomo SSE, qualificazione AI e CRM multi-tenant.">
+  <title>Leslie | Riviera Concierge &amp; Partnership OS — Venilia 8m (Portofino)</title>
+  <meta name="description" content="Piattaforma B2B e gestione prenotazioni per Venilia (battello pneumatico 8m · 270 CV) a Santa Margherita Ligure e Portofino.">
+  <meta property="og:title" content="Leslie — Riviera Concierge &amp; Partnership OS">
+  <meta property="og:description" content="Coda partner B2B, campagne globali 2027 e calendario barche per Venilia 8m (Portofino &amp; Tigullio).">
   <meta property="og:image" content="https://raw.githubusercontent.com/Noobucodonosor/leslie-agency-os/main/docs/preview/social-preview.png">
   <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚓</text></svg>">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+
     :root {
-      --bg: #070e1d;
-      --sidebar: #0b1426;
-      --card: #0e192f;
-      --card-border: rgba(148, 163, 184, 0.14);
-      --gold: #dfb25b;
-      --gold-soft: rgba(223, 178, 91, 0.12);
-      --ink: #f1f5f9;
-      --muted: #94a3b8;
-      --green: #34d399;
+      --paper: #F7F4EE;
+      --surface: #FFFDF9;
+      --surface-subtle: #F2EDE3;
+      --sea: #0B2545;
+      --sea-hover: #143661;
+      --ink: #1A2433;
+      --muted: #5A6577;
+      --brass: #8C6D32;
+      --brass-soft: rgba(140, 109, 50, 0.12);
+      --hairline: #E4DDD0;
+      --emerald: #1B6B4A;
+      --emerald-soft: rgba(27, 107, 74, 0.10);
+      --amber: #B45309;
+      --amber-soft: rgba(180, 83, 9, 0.11);
+      --radius: 14px;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+    [hidden] { display: none !important; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
+      background: var(--paper);
       color: var(--ink);
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 248px 1fr;
+      font-family: var(--font-ui);
+      line-height: 1.55;
+      overflow-x: hidden;
     }
-    aside {
-      background: var(--sidebar);
-      border-right: 1px solid var(--card-border);
-      padding: 26px 18px;
+
+    #app { display: flex; min-height: 100vh; }
+
+    .mobile-topbar { display: none; }
+    .sidebar-backdrop { position: fixed; inset: 0; background: rgba(11, 37, 69, 0.42); z-index: 210; }
+
+    .mobile-brand {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--sea);
+      letter-spacing: 0.04em;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar {
+      width: 268px;
+      background: var(--surface);
+      border-right: 1px solid var(--hairline);
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      padding: 24px 16px;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 220;
+      gap: 18px;
     }
-    .brand {
+
+    .logo {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      color: var(--gold);
-      margin-bottom: 32px;
-      padding: 0 8px;
+      gap: 11px;
+      padding: 4px 10px 16px;
+      border-bottom: 1px solid var(--hairline);
+      color: var(--sea);
     }
-    .nav { display: flex; flex-direction: column; gap: 6px; }
-    .nav button {
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--muted);
-      text-align: left;
-      padding: 11px 14px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .logo-mark { color: var(--brass); font-size: 20px; line-height: 1; }
+    .logo-text strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.04em;
     }
-    .nav button.active {
-      background: rgba(255,255,255,0.05);
-      border-color: var(--card-border);
-      color: var(--ink);
+    .logo-text small {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--brass);
       font-weight: 600;
+      margin-top: 2px;
     }
-    .nav button .count {
-      font-size: 11px;
-      color: var(--gold);
-      background: var(--gold-soft);
-      padding: 2px 8px;
-      border-radius: 999px;
-    }
-    .tenant {
-      border: 1px solid var(--card-border);
-      background: rgba(255,255,255,0.02);
-      border-radius: 14px;
-      padding: 12px;
+
+    .nav-menu { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .nav-item {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      font: inherit;
+      text-align: left;
       display: flex;
       align-items: center;
       gap: 12px;
-    }
-    .tenant-badge {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: var(--gold); color: #0b1426;
-      display: grid; place-items: center; font-weight: 800; font-size: 15px;
-    }
-    .tenant strong { display: block; font-size: 13px; }
-    .tenant small { color: var(--muted); font-size: 11px; }
-    main { padding: 36px 44px; max-width: 1180px; width: 100%; }
-    header {
-      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
-      margin-bottom: 28px;
-    }
-    h1 { font-size: 30px; letter-spacing: -0.02em; margin-bottom: 6px; }
-    .sub { color: var(--muted); font-size: 14px; }
-    .cta {
-      background: var(--gold); color: #0a1224; border: 0; border-radius: 999px;
-      padding: 11px 22px; font-weight: 700; font-size: 14px; cursor: pointer;
-      white-space: nowrap;
-    }
-    .cta:hover { filter: brightness(1.06); }
-    .demo-banner {
-      margin-bottom: 22px;
-      padding: 11px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(223, 178, 91, 0.25);
-      background: rgba(223, 178, 91, 0.07);
-      font-size: 12.5px;
-      color: #e2e8f0;
-      display: flex; justify-content: space-between; align-items: center; gap: 12px;
-    }
-    .demo-banner a { color: var(--gold); text-decoration: none; font-weight: 600; }
-    .grid-2 { display: grid; grid-template-columns: 1.45fr 1fr; gap: 22px; }
-    .panel {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 26px;
-    }
-    .pill {
-      display: inline-block;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-      color: var(--gold); background: var(--gold-soft);
-      padding: 4px 10px; border-radius: 999px; margin-bottom: 12px;
-    }
-    .panel h2 { font-size: 20px; color: var(--gold); margin-bottom: 6px; }
-    .panel p.hint { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
-    .niches { display: flex; flex-direction: column; gap: 10px; }
-    .niche {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--card-border);
-      color: var(--ink);
-      padding: 13px 16px;
-      border-radius: 12px;
-      font-size: 13.5px;
-      text-align: left;
+      padding: 12px 14px;
+      border-radius: 11px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
+    }
+    .nav-item:hover { background: var(--paper); color: var(--sea); }
+    .nav-item.active { background: var(--sea); color: #FFFDF9; font-weight: 600; }
+
+    .sidebar-box {
+      border-top: 1px solid var(--hairline);
+      padding-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .asset-pill {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--hairline);
+      background: var(--paper);
+    }
+    .asset-pill-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .asset-pill strong { display: block; font-size: 13px; color: var(--sea); }
+    .asset-pill small { display: block; font-size: 11px; color: var(--muted); }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--hairline);
+      background: var(--paper);
+    }
+    .avatar {
+      width: 34px; height: 34px; border-radius: 9px;
+      background: var(--sea); color: #FFFDF9;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 14px; flex-shrink: 0;
+    }
+
+    .main-layout {
+      flex: 1;
+      margin-left: 268px;
+      padding: 28px 34px 72px;
+      min-width: 0;
+    }
+
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding-bottom: 18px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--hairline);
+    }
+    .header-title h1 {
+      font-family: var(--font-display);
+      font-size: 34px;
+      font-weight: 700;
+      line-height: 1.08;
+      color: var(--sea);
+    }
+    .header-title p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      border-radius: 10px; padding: 9px 15px; font-size: 13px; font-weight: 600;
+      font-family: inherit; cursor: pointer; text-decoration: none;
+    }
+    .btn-primary { border: 1px solid var(--sea); background: var(--sea); color: #FFFDF9; }
+    .btn-primary:hover { background: var(--sea-hover); }
+    .btn-ghost { border: 1px solid var(--hairline); background: var(--surface); color: var(--sea); }
+    .btn-ghost:hover { background: var(--paper); }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px;
+      border: 1px solid var(--hairline); background: var(--paper); color: var(--muted);
+    }
+    .badge-green { background: var(--emerald-soft); border-color: rgba(27, 107, 74, 0.25); color: var(--emerald); }
+    .badge-amber { background: var(--amber-soft); border-color: rgba(180, 83, 9, 0.25); color: var(--amber); }
+    .badge-gold { background: var(--brass-soft); border-color: rgba(140, 109, 50, 0.25); color: var(--brass); }
+
+    .subtab-bar {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 20px; padding-bottom: 12px;
+      border-bottom: 1px solid var(--hairline);
+    }
+    .subtab-btn {
+      border: 1px solid var(--hairline); background: var(--surface); color: var(--muted);
+      padding: 8px 15px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    .subtab-btn.active { background: var(--sea); border-color: var(--sea); color: #FFFDF9; }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .kpi-tile {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .kpi-tile small {
+      display: block; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--muted); font-weight: 600;
+    }
+    .kpi-tile strong {
+      display: block; font-family: var(--font-display); font-size: 28px;
+      color: var(--sea); line-height: 1.1; margin-top: 4px;
+    }
+    .today-progress-track {
+      width: 100%; height: 6px; background: var(--surface-subtle);
+      border-radius: 999px; overflow: hidden; margin-top: 8px;
+    }
+    .today-progress-fill { height: 100%; background: var(--sea); border-radius: 999px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      box-shadow: 0 6px 20px -16px rgba(11, 37, 69, 0.14);
+    }
+    .card-title { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--sea); line-height: 1.15; }
+    .card-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    .item-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+    .list-row {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding: 12px 14px; border-radius: 11px; border: 1px solid var(--hairline); background: var(--paper);
+    }
+    .list-row-main { min-width: 0; flex: 1; }
+    .list-row-title { font-weight: 700; color: var(--sea); font-size: 14px; }
+    .list-row-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .two-col { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; align-items: start; }
+    .calendar-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-top: 12px; }
+    .cal-day { border: 1px solid var(--hairline); border-radius: 10px; background: var(--paper); padding: 9px; font-size: 12px; }
+    .cal-day-head { font-weight: 700; color: var(--sea); margin-bottom: 6px; }
+    .cal-pill { display: flex; justify-content: space-between; padding: 3px 6px; border-radius: 6px; font-size: 11px; margin-top: 4px; }
+    .cal-pill.free { background: var(--emerald-soft); color: var(--emerald); }
+    .cal-pill.option { background: var(--amber-soft); color: var(--amber); }
+    .cal-pill.confirmed { background: var(--brass-soft); color: var(--brass); }
+
+    .disclosure-box {
+      background: var(--surface); border: 1px solid var(--hairline);
+      border-radius: var(--radius); padding: 12px 18px; margin-bottom: 16px;
+    }
+    .disclosure-box summary {
+      cursor: pointer; list-style: none; font-size: 13px; font-weight: 600; color: var(--sea);
       display: flex; justify-content: space-between; align-items: center;
     }
-    .niche:hover, .niche.selected { border-color: var(--gold); background: rgba(223,178,91,0.08); }
-    .niche span.score { font-size: 11px; color: var(--muted); font-family: ui-monospace, monospace; }
-    .radar-box {
-      min-height: 290px; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; text-align: center; gap: 14px;
+    .disclosure-box summary::-webkit-details-marker { display: none; }
+    .disclosure-box summary::after { content: '+'; color: var(--brass); font-size: 17px; }
+
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(11, 37, 69, 0.45);
+      display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 400;
     }
-    .radar-ring {
-      width: 68px; height: 68px; border-radius: 50%;
-      border: 1px solid rgba(223,178,91,0.35);
-      background: radial-gradient(circle, rgba(223,178,91,0.18), transparent 70%);
-      display: grid; place-items: center; color: var(--gold); font-size: 20px;
-    }
-    .status-label { font-size: 11px; letter-spacing: 0.14em; color: var(--gold); font-weight: 700; }
-    .log {
-      width: 100%; text-align: left; font-family: ui-monospace, monospace; font-size: 12px;
-      color: #cbd5e1; background: rgba(0,0,0,0.28); border-radius: 10px;
-      padding: 12px; border: 1px solid var(--card-border); line-height: 1.6;
-    }
-    .log .ok { color: var(--green); }
-    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-    th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--card-border); }
-    th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
-    .stage {
-      display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600;
-      background: rgba(52,211,153,0.12); color: var(--green);
-    }
-    .stage.contacted { background: var(--gold-soft); color: var(--gold); }
-    .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
-    .kpi { background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 18px; }
-    .kpi small { color: var(--muted); font-size: 12px; }
-    .kpi strong { display: block; font-size: 26px; color: var(--gold); margin-top: 6px; }
-    @media (max-width: 860px) {
-      body { grid-template-columns: 1fr; }
-      aside { border-right: 0; border-bottom: 1px solid var(--card-border); padding: 16px; }
-      .brand { margin-bottom: 14px; }
-      .nav { flex-direction: row; overflow-x: auto; }
-      .tenant { display: none; }
-      main { padding: 20px 16px; }
-      header { flex-direction: column; }
-      .grid-2, .kpis { grid-template-columns: 1fr; }
+
+    @media (max-width: 960px) {
+      #app { flex-direction: column; }
+      .mobile-topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        height: 54px; padding: 0 14px; background: var(--surface);
+        border-bottom: 1px solid var(--hairline); position: sticky; top: 0; z-index: 90;
+      }
+      .sidebar {
+        width: 280px; max-width: 85vw; transform: translateX(-100%);
+        transition: transform 0.2s ease; box-shadow: none;
+      }
+      .sidebar.open { transform: translateX(0); box-shadow: 16px 0 40px rgba(11, 37, 69, 0.22); }
+      .main-layout { margin-left: 0; padding: 16px 16px 64px; }
+      .two-col { grid-template-columns: 1fr; }
+      .kpi-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .kpi-strip .kpi-tile:nth-child(3):last-child { grid-column: 1 / -1; }
+      .btn, .subtab-btn, .mobile-topbar button { min-height: 44px; }
+      .mobile-topbar button { min-width: 44px; padding: 0; }
     }
   </style>
 </head>
 <body>
-  <aside>
-    <div>
-      <div class="brand">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2.5"/><path d="M12 7.5V21M5 13a7 7 0 0 0 14 0M8 10h8"/></svg>
-        LESLIE
+<div id="app">
+  <header class="mobile-topbar">
+    <button type="button" class="btn btn-ghost btn-sm" id="mobile-menu-btn" aria-label="Apri menu">☰</button>
+    <span class="mobile-brand">⚓ LESLIE</span>
+    <span style="width:44px;" aria-hidden="true"></span>
+  </header>
+  <div id="sidebar-backdrop" class="sidebar-backdrop" hidden></div>
+
+  <aside class="sidebar" id="app-sidebar">
+    <div class="logo">
+      <span class="logo-mark">⚓</span>
+      <div class="logo-text">
+        <strong>LESLIE</strong>
+        <small>Riviera Concierge</small>
       </div>
-      <nav class="nav" id="nav">
-        <button class="active" data-view="scout" type="button">Cerca Partner <span class="count">6</span></button>
-        <button data-view="crm" type="button">I Miei Contatti <span class="count">4</span></button>
-        <button data-view="overview" type="button">Panoramica</button>
-      </nav>
     </div>
-    <div class="tenant">
-      <div class="tenant-badge">L</div>
-      <div><strong>Demo Sandbox</strong><small>Nautica &amp; Ospitalità · Read-Only</small></div>
+
+    <nav class="nav-menu">
+      <button type="button" class="nav-item active" data-view="partner">Partner</button>
+      <button type="button" class="nav-item" data-view="boat">La Mia Barca</button>
+      <button type="button" class="nav-item" data-view="sales">Prenotazioni</button>
+      <button type="button" class="nav-item" data-view="network">Ristoranti &amp; Portali</button>
+    </nav>
+
+    <div class="sidebar-box">
+      <div class="asset-pill">
+        <div class="asset-pill-label">Barca attiva</div>
+        <strong>Venilia · 8m (270 CV)</strong>
+        <small>Santa Margherita · max 8 pax</small>
+      </div>
+      <div class="user-card">
+        <div class="avatar">D</div>
+        <div>
+          <div style="font-weight:700; font-size:13px; color:var(--sea);">Dany</div>
+          <div style="font-size:11px; color:var(--muted);">Portofino Desk</div>
+        </div>
+      </div>
     </div>
   </aside>
 
-  <main>
-    <header>
-      <div>
-        <h1 id="page-title">Cerca Nuovi Partner</h1>
-        <p class="sub" id="page-sub">Scouting autonomo SSE, estrazione contatti e scoring AI (DeepSeek) per partnership B2B.</p>
+  <main class="main-layout">
+    <header class="top-header">
+      <div class="header-title">
+        <h1 id="view-title">Partner</h1>
+        <p id="view-subtitle">Le strutture e le persone da contattare oggi per Venilia (8m · 270 CV).</p>
       </div>
-      <button class="cta" id="btn-scan" type="button">Simula Scouting SSE</button>
+      <div>
+        <button type="button" class="btn btn-primary" id="primary-cta">Trova nuovi partner</button>
+      </div>
     </header>
 
-    <div class="demo-banner">
-      <span><strong>Anteprima pubblica read-only:</strong> dati dimostrativi fittizi (nessun lead reale o chiave API esposta).</span>
-      <a href="https://github.com/Noobucodonosor/leslie-agency-os" target="_blank" rel="noopener">Codice &amp; Wiki →</a>
-    </div>
+    <section id="view-partner">
+      <div class="subtab-bar">
+        <button type="button" class="subtab-btn active" data-sub="today">Oggi</button>
+        <button type="button" class="subtab-btn" data-sub="search">Cerca</button>
+        <button type="button" class="subtab-btn" data-sub="contacts">Contatti</button>
+      </div>
 
-    <div id="view-root"></div>
-  </main>
-
-  <script>
-    const niches = [
-      { name: "Ville di lusso esclusive — Riviera Ligure", weight: "1.4×" },
-      { name: "Boutique hotel & concierge — Tigullio", weight: "1.3×" },
-      { name: "Wedding Planner — Portofino & Cinque Terre", weight: "1.2×" },
-      { name: "Yacht Charter & Conciergerie Marittima", weight: "1.5×" },
-      { name: "Luxury Tailor-Made Italy Tours", weight: "1.1×" },
-      { name: "Esperienze Enogastronomiche Private", weight: "1.0×" }
-    ];
-
-    const demoLeads = [
-      { org: "Villa Bellavista Concierge (Demo)", cat: "Boutique Hotel", score: "9.2 / 10", stage: "Partner", cls: "" },
-      { org: "Riviera Charter Desk (Demo)", cat: "Nautica", score: "8.8 / 10", stage: "Contattato", cls: "contacted" },
-      { org: "Atelier Eventi Golfo (Demo)", cat: "Wedding Planner", score: "8.5 / 10", stage: "Partner", cls: "" },
-      { org: "Portofino Private Tours (Demo)", cat: "Esperienze", score: "8.1 / 10", stage: "Contattato", cls: "contacted" }
-    ];
-
-    let view = "scout";
-    let selectedNiche = 0;
-    let scanLines = [];
-
-    function render() {
-      const root = document.getElementById("view-root");
-      if (view === "scout") {
-        document.getElementById("page-title").textContent = "Cerca Nuovi Partner";
-        document.getElementById("page-sub").textContent = "Trova hotel, wedding planner, concierge e agenzie con scouting autonomo SSE e scoring AI.";
-        root.innerHTML = `
-          <div class="grid-2">
-            <section class="panel">
-              <span class="pill">INTELLIGENCE ATTIVA</span>
-              <h2>Settori Monitorati</h2>
-              <p class="hint">Seleziona una nicchia pesata dal motore di apprendimento per simulare lo scouting.</p>
-              <div class="niches">
-                ${niches.map((n, i) => `
-                  <button class="niche ${i === selectedNiche ? 'selected' : ''}" data-idx="${i}" type="button">
-                    <span>${n.name}</span>
-                    <span class="score">peso ${n.weight}</span>
-                  </button>
-                `).join("")}
-              </div>
-            </section>
-            <section class="panel">
-              <h2 style="color:var(--ink);font-size:18px;margin-bottom:6px">Ricerca Automatica (SSE)</h2>
-              <p class="hint">Pipeline: Google Places → Scraper /about &amp; /team → DeepSeek Scoring 0–10 → SQLite WAL.</p>
-              <div class="radar-box">
-                <div class="radar-ring">◎</div>
-                <div class="status-label">${scanLines.length ? 'SIMULAZIONE COMPLETATA' : 'READY TO SCAN'}</div>
-                ${scanLines.length ? `<div class="log">${scanLines.join("<br>")}</div>` : `<p class="hint" style="margin:0">Clicca "Simula Scouting SSE" in alto per vedere il flusso di qualificazione.</p>`}
-              </div>
-            </section>
-          </div>`;
-        root.querySelectorAll(".niche").forEach(btn => {
-          btn.onclick = () => { selectedNiche = Number(btn.dataset.idx); render(); };
-        });
-      } else if (view === "crm") {
-        document.getElementById("page-title").textContent = "I Miei Contatti";
-        document.getElementById("page-sub").textContent = "Funnel B2B isolato per tenant (saved → contacted → partner) con punteggio AI verificato.";
-        root.innerHTML = `
-          <section class="panel">
-            <table>
-              <thead><tr><th>Organizzazione (Dati Demo)</th><th>Settore</th><th>AI Score</th><th>Stato Funnel</th></tr></thead>
-              <tbody>
-                ${demoLeads.map(l => `
-                  <tr>
-                    <td><strong>${l.org}</strong></td>
-                    <td style="color:var(--muted)">${l.cat}</td>
-                    <td style="font-family:ui-monospace,monospace;color:var(--gold)">${l.score}</td>
-                    <td><span class="stage ${l.cls}">${l.stage}</span></td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-          </section>`;
-      } else {
-        document.getElementById("page-title").textContent = "Panoramica Architettura";
-        document.getElementById("page-sub").textContent = "Metriche operative e stack di produzione su Google Cloud Run (europe-west1).";
-        root.innerHTML = `
-          <div class="kpis">
-            <div class="kpi"><small>Runtime Produzione</small><strong>Cloud Run</strong></div>
-            <div class="kpi"><small>Persistenza</small><strong>SQLite WAL + GCS</strong></div>
-            <div class="kpi"><small>Test End-to-End</small><strong>21 pytest</strong></div>
+      <div id="sub-today">
+        <div class="kpi-strip">
+          <div class="kpi-tile"><small>Da ricontattare</small><strong>2</strong></div>
+          <div class="kpi-tile"><small>Pronti oggi</small><strong>6</strong></div>
+          <div class="kpi-tile">
+            <small>Contattati questa settimana</small>
+            <strong>9 / 25</strong>
+            <div class="today-progress-track"><div class="today-progress-fill" style="width:36%"></div></div>
           </div>
-          <section class="panel">
-            <h2>Architettura End-to-End</h2>
-            <p class="hint" style="margin-bottom:0;line-height:1.7">
-              Backend <strong>Python 3.11 / Flask + Gunicorn</strong> (1 worker, 8 thread per coerenza SQLite WAL con sync asincrono su Google Cloud Storage).
-              Motore <code>autonomous_scout.py</code> in streaming SSE, <code>scraper.py</code> per estrazione contatti da pagine statiche,
-              <code>ai_analyzer.py</code> su DeepSeek con output JSON strutturato, e <code>commerce_engine.py</code> con portale partner dedicato.
-            </p>
-          </section>`;
-      }
-    }
+        </div>
 
-    document.getElementById("nav").querySelectorAll("button").forEach(btn => {
-      btn.onclick = () => {
-        view = btn.dataset.view;
-        document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("active", b === btn));
-        render();
-      };
+        <div class="card">
+          <h2 class="card-title">Chi contattare oggi</h2>
+          <p class="card-sub">Le persone giuste da scrivere adesso, in ordine di priorità.</p>
+          <div class="item-list" id="today-list"></div>
+        </div>
+      </div>
+
+      <div id="sub-search" hidden>
+        <div class="card">
+          <h2 class="card-title" style="margin-bottom:4px;">Trova nuovi partner</h2>
+          <p class="card-sub" style="margin-bottom:14px;">Cerca hotel, concierge o agenzie viaggio che portano ospiti a Portofino e Santa Margherita.</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+            <input type="text" style="flex:1; min-width:220px; padding:10px 12px; border:1px solid var(--hairline); border-radius:10px;" value="Luxury travel advisor New York Portofino">
+            <button type="button" class="btn btn-ghost">Cerca</button>
+            <button type="button" class="btn btn-primary">Trova automaticamente</button>
+          </div>
+          <details class="disclosure-box" style="margin-bottom:0;">
+            <summary>Scegli mercato o opzioni avanzate (USA, UK, Svizzera/Germania, Francia, Italia)</summary>
+            <p class="card-sub" style="margin-top:8px;">Campagne 2027 pronte su 6 mercati internazionali per riempire il calendario di Venilia da aprile a ottobre.</p>
+          </details>
+        </div>
+      </div>
+
+      <div id="sub-contacts" hidden>
+        <div class="card">
+          <h2 class="card-title">I Miei Contatti</h2>
+          <p class="card-sub">Hotel, concierge e agenzie internazionali salvate per Venilia (Stagione 2027).</p>
+          <div class="item-list" id="contacts-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-boat" hidden>
+      <div class="card">
+        <span class="badge badge-gold">Stagione 2027 · Santa Margherita Ligure</span>
+        <h2 class="card-title" style="margin-top:8px;">Venilia — Battello pneumatico 8m · 270 CV</h2>
+        <p class="card-sub" style="margin-bottom:14px;">Max 8 passeggeri (+ skipper) · Cuscineria prendisole, impianto hi-fi, doccetta acqua dolce e frigo bar a bordo.</p>
+        <div class="kpi-strip">
+          <div class="kpi-tile"><small>Lunghezza</small><strong>8m</strong></div>
+          <div class="kpi-tile"><small>Motore</small><strong>270 CV</strong></div>
+          <div class="kpi-tile"><small>Ospiti max</small><strong>8 + skipper</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-sales" hidden>
+      <div class="kpi-strip">
+        <div class="kpi-tile"><small>Preventivi attivi</small><strong>4</strong></div>
+        <div class="kpi-tile"><small>Barche confermate</small><strong>3</strong></div>
+        <div class="kpi-tile"><small>Incasso confermato</small><strong>€2.450</strong></div>
+      </div>
+      <details class="disclosure-box">
+        <summary>+ Crea nuovo preventivo (o incolla un messaggio WhatsApp)</summary>
+        <p class="card-sub" style="margin-top:8px;">Incolla un messaggio in IT / EN / FR / DE per generare l'offerta su Venilia, Gabri o Massi.</p>
+      </details>
+      <div class="two-col">
+        <div class="card">
+          <h2 class="card-title">Agenda Barche (Prossimi giorni)</h2>
+          <p class="card-sub">Disponibilità reale di Venilia, Gabri e Massi.</p>
+          <div class="calendar-strip" id="demo-cal"></div>
+        </div>
+        <div class="card">
+          <h2 class="card-title">Ultime offerte</h2>
+          <div class="item-list">
+            <div class="list-row">
+              <div class="list-row-main">
+                <span class="list-row-title">Fam. Miller (NYC) · Venilia 8m</span>
+                <div class="list-row-meta">18 giu 2027 · 6 ospiti · Portofino &amp; San Fruttuoso</div>
+              </div>
+              <span class="badge badge-green">Confermato</span>
+            </div>
+            <div class="list-row">
+              <div class="list-row-main">
+                <span class="list-row-title">Thomas Weber · Venilia Tramonto</span>
+                <div class="list-row-meta">22 giu 2027 · 4 ospiti · Lingua DE</div>
+              </div>
+              <span class="badge badge-amber">In attesa</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-network" hidden>
+      <div class="card">
+        <h2 class="card-title">Ristoranti sul Mare &amp; Portali QR</h2>
+        <p class="card-sub">Accordi Boat-to-Table (San Fruttuoso, Punta Chiappa, Portofino) e locandine QR per hotel e case vacanza.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="demo-modal" class="modal-backdrop" hidden>
+  <div class="card" style="max-width:520px; width:100%;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h2 class="card-title" id="modal-title">Partner</h2>
+      <button type="button" class="btn btn-ghost btn-sm" id="modal-close">×</button>
+    </div>
+    <p class="card-sub" id="modal-meta"></p>
+    <p style="font-size:13px; margin:14px 0; padding:12px; background:var(--paper); border-radius:10px; border:1px solid var(--hairline);" id="modal-pitch"></p>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button type="button" class="btn btn-primary btn-sm" id="modal-mark">Segna come contattato</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="modal-close-2">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PARTNERS = [
+  { id: 1, name: 'Belmond Hotel Splendido', badge: 'Da ricontattare', cls: 'badge-amber', contact: 'concierge.splendido@hotel-demo.example · +39 0185 267801', hint: 'Nessuna risposta da 7+ giorni — manda un breve sollecito' },
+  { id: 2, name: 'Manhattan Bespoke Travel', badge: 'Alta affinità', cls: 'badge-green', contact: 'sarah.klein@nyctravel-demo.example · New York', hint: 'Contatto diretto pronto per scrivere oggi (Stagione 2027)' },
+  { id: 3, name: 'Zurich Luxury Reisen', badge: 'Alta affinità', cls: 'badge-green', contact: 'lukas.meyer@reisen-demo.ch · Zurigo', hint: 'Contatto diretto · pitch in tedesco per Venilia 8m' },
+  { id: 4, name: 'Eight Hotel Portofino', badge: 'Nuovo contatto', cls: '', contact: 'reception@eight-demo.example · Paraggi', hint: 'Presenta Venilia (8m · 270 CV · max 8 pax) per gli ospiti 2027' },
+];
+
+const listEl = document.getElementById('today-list');
+const contactsEl = document.getElementById('contacts-list');
+
+function renderLists() {
+  listEl.innerHTML = PARTNERS.map(p => `
+    <div class="list-row">
+      <div class="list-row-main">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="list-row-title">${p.name}</span>
+          <span class="badge ${p.cls}">${p.badge}</span>
+        </div>
+        <div class="list-row-meta">${p.contact}</div>
+        <div class="list-row-meta">${p.hint}</div>
+      </div>
+      <div><button type="button" class="btn btn-primary btn-sm open-p" data-id="${p.id}">Contatta</button></div>
+    </div>
+  `).join('');
+  contactsEl.innerHTML = listEl.innerHTML;
+  document.querySelectorAll('.open-p').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = PARTNERS.find(x => x.id === Number(btn.dataset.id));
+      if (!p) return;
+      document.getElementById('modal-title').textContent = p.name;
+      document.getElementById('modal-meta').textContent = p.contact;
+      document.getElementById('modal-pitch').textContent = `Hello ${p.name} team! I operate Venilia, a private 8m RIB (270 HP) based in Santa Margherita Ligure hosting up to 8 guests (+ skipper) with sun cushions, hi-fi, freshwater shower and fridge-bar. Dedicated B2B partner rates open for Season 2027.`;
+      document.getElementById('demo-modal').hidden = false;
     });
+  });
+}
 
-    document.getElementById("btn-scan").onclick = () => {
-      view = "scout";
-      document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("active", b.dataset.view === "scout"));
-      const n = niches[selectedNiche].name;
-      scanLines = [
-        `[SSE] Query pool: "${n}"`,
-        `[PLACES] 12 candidati individuati nell'area target`,
-        `[SCRAPER] Estratte pagine /about e /team (filtri anti-rumore attivi)`,
-        `<span class="ok">[DEEPSEEK] 3 lead qualificati con score ≥ 8.0 / 10 (modalità demo)</span>`
-      ];
-      render();
-    };
+renderLists();
 
-    render();
-  </script>
+document.getElementById('demo-cal').innerHTML = [
+  { d: 'sab 14 giu', v: 'confirmed', g: 'free', m: 'free' },
+  { d: 'dom 15 giu', v: 'option', g: 'confirmed', m: 'free' },
+  { d: 'lun 16 giu', v: 'free', g: 'free', m: 'option' },
+  { d: 'mar 17 giu', v: 'free', g: 'option', m: 'free' },
+].map(x => `
+  <div class="cal-day">
+    <div class="cal-day-head">${x.d}</div>
+    <div class="cal-pill ${x.v}"><span>Venilia</span><span>${x.v === 'free' ? 'Libero' : x.v === 'option' ? 'Opzione' : 'Conf.'}</span></div>
+    <div class="cal-pill ${x.g}"><span>Gabri</span><span>${x.g === 'free' ? 'Libero' : x.g === 'option' ? 'Opzione' : 'Conf.'}</span></div>
+    <div class="cal-pill ${x.m}"><span>Massi</span><span>${x.m === 'free' ? 'Libero' : x.m === 'option' ? 'Opzione' : 'Conf.'}</span></div>
+  </div>
+`).join('');
+
+const setDrawer = open => {
+  document.getElementById('app-sidebar').classList.toggle('open', open);
+  document.getElementById('sidebar-backdrop').hidden = !open;
+};
+document.getElementById('mobile-menu-btn').addEventListener('click', () => setDrawer(!document.getElementById('app-sidebar').classList.contains('open')));
+document.getElementById('sidebar-backdrop').addEventListener('click', () => setDrawer(false));
+
+const VIEW_META = {
+  partner: ['Partner', 'Le strutture e le persone da contattare oggi per Venilia (8m · 270 CV).', 'Trova nuovi partner'],
+  boat: ['La Mia Barca', 'Scheda Venilia (8m · 270 CV · max 8 passeggeri).', ''],
+  sales: ['Prenotazioni', 'Agenda barche e offerte inviate.', ''],
+  network: ['Ristoranti & Portali', 'Ristoranti sul mare e portali QR.', ''],
+};
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const v = btn.dataset.view;
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b === btn));
+    ['partner', 'boat', 'sales', 'network'].forEach(id => { document.getElementById('view-' + id).hidden = id !== v; });
+    const [t, s, cta] = VIEW_META[v];
+    document.getElementById('view-title').textContent = t;
+    document.getElementById('view-subtitle').textContent = s;
+    const ctaBtn = document.getElementById('primary-cta');
+    ctaBtn.hidden = !cta;
+    if (cta) ctaBtn.textContent = cta;
+    setDrawer(false);
+  });
+});
+
+document.querySelectorAll('.subtab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const sub = btn.dataset.sub;
+    document.querySelectorAll('.subtab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    ['today', 'search', 'contacts'].forEach(id => { document.getElementById('sub-' + id).hidden = id !== sub; });
+  });
+});
+
+document.getElementById('primary-cta').addEventListener('click', () => {
+  document.querySelector('.subtab-btn[data-sub="search"]').click();
+});
+document.getElementById('modal-close').addEventListener('click', () => { document.getElementById('demo-modal').hidden = true; });
+document.getElementById('modal-close-2').addEventListener('click', () => { document.getElementById('demo-modal').hidden = true; });
+document.getElementById('modal-mark').addEventListener('click', () => { document.getElementById('demo-modal').hidden = true; });
+</script>
 </body>
 </html>
