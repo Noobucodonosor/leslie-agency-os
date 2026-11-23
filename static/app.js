@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showUndoToast(message, onCommit, onUndo, durationMs = 5000) {
         const toast = elements.toast;
-        toast.innerHTML = `<span>${message}</span>
+        toast.innerHTML = `<span>${escapeHTML(message)}</span>
             <button class="btn btn-ghost" id="undo-btn" style="margin-left:16px;">Annulla</button>
             <span id="undo-counter" style="margin-left:8px; font-size:12px; opacity:0.7;"></span>`;
         toast.style.display = 'flex';

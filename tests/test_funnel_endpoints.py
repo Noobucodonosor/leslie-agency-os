@@ -146,3 +146,14 @@ def test_dashboard_and_reports_scoped_by_user(client, app_with_db):
     r_ale = client.get('/api/dashboard/conversion', headers={'X-User-ID': 'alessio'})
     assert r_dany.get_json()['funnel']['saved'] == 1
     assert r_ale.get_json()['funnel']['saved'] == 1
+
+
+def test_security_headers_and_malformed_json_rejected(as_dany, app_with_db):
+    r_empty = as_dany.post('/api/leads/save', data='not-json', content_type='application/json')
+    assert r_empty.status_code == 400
+    assert r_empty.headers.get('X-Content-Type-Options') == 'nosniff'
+    assert r_empty.headers.get('X-Frame-Options') == 'SAMEORIGIN'
+
+    r_missing_name = as_dany.post('/api/leads/save', json={'website': 'https://x.example'})
+    assert r_missing_name.status_code == 400
+

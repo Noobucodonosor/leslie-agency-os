@@ -45,6 +45,15 @@ _cors_origins = [o.strip() for o in _cors_env.split(",") if o.strip()] if _cors_
     "http://localhost:8080", "http://127.0.0.1:8080"
 ]
 CORS(app, origins=_cors_origins, supports_credentials=True)
+app.config["MAX_CONTENT_LENGTH"] = 256 * 1024  # 256 KB body limit
+
+
+@app.after_request
+def _set_security_headers(response):
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
+    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    return response
 
 # DB_PATH is now imported from config
 GCS_BUCKET = os.environ.get("GCS_BUCKET", "")
@@ -1859,7 +1868,9 @@ def save_lead():
     if not active_workspace_required():
         return jsonify({"error": "client_required", "message": "Seleziona un cliente prima di salvare un contatto."}), 400
     uid = get_user_id()
-    d = request.json
+    d = request.get_json(silent=True)
+    if not isinstance(d, dict) or not (d.get('name') or '').strip():
+        return jsonify({"error": "invalid_payload", "message": "Payload JSON con campo 'name' obbligatorio."}), 400
     conn = get_db_conn()
     try:
         email_val = d.get('email') or ''
@@ -1871,12 +1882,12 @@ def save_lead():
         conn.execute('''INSERT INTO leads (user_id, company_name, website, phone, email, address, source_query, status, is_generic_email, category)
             VALUES (?, ?, ?, ?, ?, ?, ?, 'saved', ?, ?)
             ON CONFLICT(user_id, website) DO UPDATE SET status='saved', is_generic_email=excluded.is_generic_email
-        ''', (uid, d.get('name'), d.get('website'), d.get('phone'),
+        ''', (uid, str(d.get('name', ''))[:255], d.get('website'), d.get('phone'),
               email_val, d.get('address'), d.get('query'), generic_flag, d.get('category', '')))
         conn.commit()
         return jsonify({"ok": True})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
+    except Exception:
+        return jsonify({"error": "save_failed"}), 400
     finally:
         conn.close()
 
@@ -1885,7 +1896,10 @@ def save_lead():
 @db_write
 def update_lead_status(lid):
     uid = get_user_id()
-    new_status = request.json.get('status', 'saved')
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return jsonify({"error": "invalid_payload"}), 400
+    new_status = payload.get('status', 'saved')
     if new_status not in LEAD_STATUSES:
         return jsonify({"error": "invalid_status", "allowed": sorted(LEAD_STATUSES)}), 400
     conn = get_db_conn()
@@ -1912,7 +1926,10 @@ def update_lead_status(lid):
 @db_write
 def update_lead_notes(lid):
     uid = get_user_id()
-    notes = request.json.get('notes', '')
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return jsonify({"error": "invalid_payload"}), 400
+    notes = str(payload.get('notes', ''))[:4000]
     conn = get_db_conn()
     conn.execute("UPDATE leads SET user_notes=? WHERE id=? AND user_id=?", (notes, lid, uid))
     conn.commit()
