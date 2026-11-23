@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // ─── STATE ───
     let currentState = {
-        currentUser: { id: 'dany', name: 'Leslie', emoji: '⚓' },
+        currentUser: { id: 'owner', name: 'Leslie', emoji: '⚓' },
         currentClient: { slug: localStorage.getItem('leslie_active_client') || 'default', name: 'Portafoglio personale' },
         clients: [],
         opportunities: [],
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Single-user mode
-    const FIXED_USER = { id: 'dany', name: 'Leslie', emoji: '⚓' };
+    const FIXED_USER = { id: 'owner', name: 'Leslie', emoji: '⚓' };
 
     // ─── UI ELEMENTS ───
     const elements = {
@@ -1764,8 +1764,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const t = conv.totals;
         const categoryEntries = Object.entries(conv.by_category || {})
             .map(([cat, s]) => ({ cat, ...s, total: STATUS_ORDER.reduce((a, k) => a + (s[k] || 0), 0) }))
-            .sort((a, b) => b.total - a.total)
-            .slice(0, 12);
+            .sort((a, b) => b.total - a.total);
 
         const monthlyRows = (conv.monthly || []).slice(-6);
         const maxMonthly = Math.max(1, ...monthlyRows.map(m => Math.max(m.contacted, m.partner)));
@@ -1962,7 +1961,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div style="margin-bottom:24px;">
                                     <h4 style="margin-bottom:10px; font-size:14px;"><i class="fa-solid fa-users" style="color:var(--accent);"></i> Persone identificate (${people.length})</h4>
                                     <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px;">
-                                        ${people.slice(0, 12).map(p => `
+                                        ${people.map(p => `
                                             <div style="background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:12px; padding:12px;">
                                                 <div style="font-weight:600; font-size:13px; color:var(--text-main);">${escapeHTML(p.name)}</div>
                                                 <div style="font-size:11px; color:var(--accent);">${escapeHTML(p.role || '')}</div>

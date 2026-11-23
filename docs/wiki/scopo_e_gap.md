@@ -44,7 +44,7 @@ Solo gli step 1-3 sono nell'app. Gli step 4-6 vivono nella testa dei due utenti 
 - Structured logging con severity (WARN quando quota vicina, ERROR quando cap raggiunto).
 - Rimuovere codice orfano rimasto (tabella `analysis`, `MODELS_TO_TRY`, `require_lead_owner`, `abort/send_file` non usati).
 
-### 👤 Utente (Dany / Alessio)
+### 👤 Utente (Noobucodonosor / Partner)
 
 **Cosa funziona**
 - Auto-scout è "fire and forget", risultati streaming visivi.

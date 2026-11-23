@@ -32,7 +32,7 @@ def _load_client_profile(scope_id):
     finally:
         conn.close()
 
-def run_scout_cycle(user_id='dany', query_obj=None):
+def run_scout_cycle(user_id='owner', query_obj=None):
     """Esegue un ciclo completo e ritorna il riepilogo (Sincrono)."""
     gen = stream_scout_cycle(user_id, query_obj)
     final_result = None
@@ -97,7 +97,7 @@ def _select_smart_query(user_id, client_profile, query_pools):
     return cat, random.choice(available), list(query_pools[cat]), "random"
 
 
-def stream_scout_cycle(user_id='dany', query_obj=None, max_results=10, min_score=0):
+def stream_scout_cycle(user_id='owner', query_obj=None, max_results=10, min_score=0):
     """
     Generator che esegue lo scouting e yielda messaggi di progresso dettagliati.
 

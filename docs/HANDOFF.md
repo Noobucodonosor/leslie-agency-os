@@ -1,6 +1,6 @@
 # Leslie — Handoff "chiavi in mano"
 
-Documento operativo per il proprietario dell'app (Dany/Alessio). Contiene
+Documento operativo per il proprietario dell'app (Noobucodonosor/Partner). Contiene
 tutto ciò che serve per **usare**, **mantenere**, **deployare** e **risolvere
 i problemi comuni** senza dover leggere il codice.
 
@@ -101,14 +101,14 @@ L'endpoint HTML pronto per il body-mail è:
 
 ```
 GET /api/reports/monthly.html?month=YYYY-MM
-Header:  X-User-ID: dany   (o alessio)
+Header:  X-User-ID: owner   (o partner)
 ```
 
 Esempio cron cron-only (macOS/Linux con `mail`):
 
 ```cron
 # 1° del mese alle 09:00 UTC — invia report del mese precedente
-0 9 1 * *  curl -s -H 'X-User-ID: dany' \
+0 9 1 * *  curl -s -H 'X-User-ID: owner' \
   "https://<cloud-run-url>/api/reports/monthly.html?month=$(date -u -d 'last month' +%Y-%m)" \
   | mail -a 'Content-Type: text/html' -s "Leslie report $(date -u -d 'last month' +%Y-%m)" you@example.com
 ```

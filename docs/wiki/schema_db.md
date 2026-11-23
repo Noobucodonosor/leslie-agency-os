@@ -16,7 +16,7 @@ Ogni azienda trovata (via scout o live search) e **salvata** finisce qui.
 | Colonna | Tipo | Note |
 |---|---|---|
 | `id` | INTEGER PK | autoincrement |
-| `user_id` | TEXT | `'dany'` o `'alessio'`, default `'dany'` |
+| `user_id` | TEXT | `'owner'` o `'partner'`, default `'owner'` |
 | `company_name` | TEXT NOT NULL | nome ufficiale da Google Places |
 | `website` | TEXT UNIQUE | **chiave logica**: due lead con stesso website non possono coesistere |
 | `phone` | TEXT | da Places `formatted_phone_number` |
@@ -84,7 +84,7 @@ Probabile candidato per rimozione. Vedi [[invarianti]].
 
 | Colonna | Tipo | Note |
 |---|---|---|
-| `user_id` | TEXT PK | `'dany'` o `'alessio'` |
+| `user_id` | TEXT PK | `'owner'` o `'partner'` |
 | `weights` | TEXT | JSON: `{categoria: peso}` |
 | `settings` | TEXT | JSON: contiene `custom_queries`, parametri scout |
 

@@ -639,7 +639,7 @@ def init_db():
     c.execute("PRAGMA foreign_keys=ON;")
     c.execute('''CREATE TABLE IF NOT EXISTS leads (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id TEXT NOT NULL DEFAULT 'dany',
+        user_id TEXT NOT NULL DEFAULT 'owner',
         company_name TEXT NOT NULL,
         website TEXT,
         phone TEXT,
@@ -672,7 +672,7 @@ def init_db():
     )''')
     c.execute('''CREATE TABLE IF NOT EXISTS search_history (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id TEXT NOT NULL DEFAULT 'dany',
+        user_id TEXT NOT NULL DEFAULT 'owner',
         query TEXT NOT NULL,
         results_count INTEGER DEFAULT 0,
         new_count INTEGER DEFAULT 0,
@@ -753,10 +753,10 @@ def init_db():
     
     # Migrazione: Aggiungi user_id se manca (per DB esistenti)
     try:
-        c.execute("ALTER TABLE leads ADD COLUMN user_id TEXT NOT NULL DEFAULT 'dany'")
+        c.execute("ALTER TABLE leads ADD COLUMN user_id TEXT NOT NULL DEFAULT 'owner'")
     except sqlite3.OperationalError: pass  # colonna/indice già presente
     try:
-        c.execute("ALTER TABLE search_history ADD COLUMN user_id TEXT NOT NULL DEFAULT 'dany'")
+        c.execute("ALTER TABLE search_history ADD COLUMN user_id TEXT NOT NULL DEFAULT 'owner'")
     except sqlite3.OperationalError: pass  # colonna/indice già presente
     try:
         c.execute("ALTER TABLE learned_intelligence ADD COLUMN description TEXT DEFAULT ''")
@@ -1148,7 +1148,7 @@ def _save_custom_queries(uid, custom_queries):
 
 # ─── UTILS ──────────────────────────────────────────────────────────────────────
 
-VALID_USER_IDS = {'dany', 'alessio'}
+VALID_USER_IDS = {'owner', 'partner'}
 CLIENT_SLUG_RE = re.compile(r'^[a-z0-9][a-z0-9-]{0,47}$')
 VALID_BUSINESS_TYPES = {'nautical', 'hospitality', 'experience', 'other'}
 
@@ -1183,13 +1183,13 @@ def get_owner_id():
     """
     Recupera l'ID utente con whitelist hard.
     Priorità: sessione HMAC -> header X-User-ID -> query param.
-    Fallback su 'dany' solo se NESSUNA fonte ha valore valido (dev mode).
+    Fallback su 'owner' solo se NESSUNA fonte ha valore valido (dev mode).
     """
     uid = session.get('user_id') or request.headers.get('X-User-ID') or request.args.get('user_id')
     if uid not in VALID_USER_IDS:
-        uid = 'dany'  # fallback dev: log per visibilità
+        uid = 'owner'  # fallback dev: log per visibilità
         if request.path.startswith('/api/'):
-            print(f"[AUTH] Fallback uid='dany' su {request.path} (header={request.headers.get('X-User-ID')!r})")
+            print(f"[AUTH] Fallback uid='owner' su {request.path} (header={request.headers.get('X-User-ID')!r})")
     return uid
 
 
@@ -1229,7 +1229,7 @@ def active_workspace_required():
 @app.route('/api/auth/login', methods=['POST'])
 def api_login():
     uid = request.json.get('user_id')
-    if uid in ['dany', 'alessio']:
+    if uid in ['owner', 'partner']:
         session['user_id'] = uid
         return jsonify({"ok": True, "user": uid})
     return jsonify({"error": "Utente non autorizzato"}), 401
@@ -2173,14 +2173,17 @@ def export_csv():
 @app.route('/api/discovery/feed')
 def api_discovery_feed():
     uid = get_user_id()
+    try:
+        limit = max(1, min(int(request.args.get('limit', 50)), 200))
+    except (TypeError, ValueError):
+        limit = 50
     conn = get_db_conn()
     conn.row_factory = sqlite3.Row
-    # Prendi i 12 lead più recenti che hanno un'analisi AI
     rows = conn.execute("""
         SELECT * FROM leads 
         WHERE user_id=? AND (COALESCE(ai_audit,'') != '' OR seo_data IS NOT NULL)
-        ORDER BY created_at DESC LIMIT 12
-    """, (uid,)).fetchall()
+        ORDER BY created_at DESC LIMIT ?
+    """, (uid, limit)).fetchall()
     conn.close()
     return jsonify([dict(r) for r in rows])
 

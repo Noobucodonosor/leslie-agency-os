@@ -8,7 +8,7 @@ Se apri questa cartella come vault Obsidian, la Vista Grafo mostra le relazioni.
 ## 🚀 Stato Attuale
 - **Fase**: Produzione (delivery "chiavi in mano" — 2026-07-15)
 - **Obiettivo Corrente**: Uso operativo del funnel (saved → contacted → partner)
-- **Multi-User**: Supporto Dany/Alessio con pesi e leads isolati per `user_id`
+- **Multi-User**: Supporto Noobucodonosor/Partner con pesi e leads isolati per `user_id`
 - **Multi-Cliente**: profili separati per nautica, ospitalità ed esperienze; control room con prossima azione e rete interna
 - **Regione**: `europe-west1` (Belgio)
 - **Come si opera**: leggi [[HANDOFF]] (runbook per utenti finali)

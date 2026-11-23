@@ -52,19 +52,19 @@ def client(app_with_db):
 
 
 @pytest.fixture
-def as_dany(client):
-    """Client con header X-User-ID=dany."""
+def as_owner(client):
+    """Client con header X-User-ID=owner."""
     class Wrapped:
         def get(self, url, **kw):
             headers = kw.pop('headers', {}) or {}
-            headers.setdefault('X-User-ID', 'dany')
+            headers.setdefault('X-User-ID', 'owner')
             return client.get(url, headers=headers, **kw)
         def post(self, url, **kw):
             headers = kw.pop('headers', {}) or {}
-            headers.setdefault('X-User-ID', 'dany')
+            headers.setdefault('X-User-ID', 'owner')
             return client.post(url, headers=headers, **kw)
         def delete(self, url, **kw):
             headers = kw.pop('headers', {}) or {}
-            headers.setdefault('X-User-ID', 'dany')
+            headers.setdefault('X-User-ID', 'owner')
             return client.delete(url, headers=headers, **kw)
     return Wrapped()

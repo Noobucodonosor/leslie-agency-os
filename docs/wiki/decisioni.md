@@ -107,7 +107,7 @@ Vedi [[architettura]], [[deploy_e_infra]].
 **Scelto perché**: l'app è privata, il link non è pubblicizzato, e i due utenti sono co-owner del business.
 Aggiungere OAuth avrebbe richiesto UX di login, Google Console setup, ecc. Non ne valeva la pena.
 
-**Trade-off accettato**: chiunque scopra l'URL e conosca gli UID (`dany`, `alessio`) ha accesso.
+**Trade-off accettato**: chiunque scopra l'URL e conosca gli UID (`owner`, `partner`) ha accesso.
 Mitigato dal fatto che l'URL Cloud Run è **randomicamente generato** (non indicizzato) e non è pubblicizzato.
 
 **Se un giorno pubblicizzi l'URL**: aggiungi vera auth immediatamente. Vedi `app.py:756`.
@@ -141,7 +141,7 @@ Mitigato dal fatto che l'URL Cloud Run è **randomicamente generato** (non indic
 ## Query espanse persistite in `custom_queries` invece di `QUERY_POOLS` globale (2026-07-02)
 
 **Scelto perché**: la vecchia `QUERY_POOLS[cat].extend(new_qs)` aveva due problemi:
-1. **Leak cross-user**: il dict è a livello modulo, condiviso tra `dany` e `alessio`.
+1. **Leak cross-user**: il dict è a livello modulo, condiviso tra `owner` e `partner`.
 2. **Non persistente**: al restart del container, le query espanse si perdevano.
 
 Persistendole in `user_settings.settings.custom_queries[cat]` risolvi entrambi in un colpo, senza tabelle nuove.
@@ -154,7 +154,7 @@ Persistendole in `user_settings.settings.custom_queries[cat]` risolvi entrambi i
 
 ## Fail-fast su `SECRET_KEY` mancante (2026-07-02)
 
-**Scelto perché**: il fallback statico `"leslie-default-marine-secret-2026"` era hardcoded nel repo pubblico. Chiunque leggesse il codice poteva firmare cookie di sessione validi con `user_id=dany` e bypassare la whitelist.
+**Scelto perché**: il fallback statico `"leslie-default-marine-secret-2026"` era hardcoded nel repo pubblico. Chiunque leggesse il codice poteva firmare cookie di sessione validi con `user_id=owner` e bypassare la whitelist.
 
 **Comportamento**: startup solleva `RuntimeError` se `SECRET_KEY` manca E `FLASK_ENV != development`. Meglio un container che non parte di uno che parte insicuro.
 

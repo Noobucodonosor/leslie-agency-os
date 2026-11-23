@@ -3,7 +3,7 @@
 - **Stato:** Accettato
 - **Priorità:** P1 — Alta
 - **Data:** 2026-11-23
-- **Autori:** Dany (`Noobucodonosor`)
+- **Autori:** `Noobucodonosor`
 - **Fonti:** `Wiki/architettura.md`, `Wiki/decisioni.md`, `Wiki/schema_db.md`, `LESLIE.md`
 
 ---

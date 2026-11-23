@@ -71,7 +71,7 @@ def _install_mocks(monkeypatch, ai_module_names=('ai_analyzer', 'autonomous_scou
 def test_scout_stream_end_to_end(app_with_db, monkeypatch):
     _install_mocks(monkeypatch)
     import autonomous_scout
-    updates = list(autonomous_scout.stream_scout_cycle('dany', max_results=1, min_score=0))
+    updates = list(autonomous_scout.stream_scout_cycle('owner', max_results=1, min_score=0))
     types = [u['type'] for u in updates]
     assert 'query_selected' in types
     assert 'places_results' in types
@@ -80,7 +80,7 @@ def test_scout_stream_end_to_end(app_with_db, monkeypatch):
 
     # Il lead deve essere in DB con is_premium=1 e contacts_json valido
     conn = sqlite3.connect(app_with_db.DB_PATH)
-    row = conn.execute("SELECT company_name, is_premium, contacts_json, category, selling_angle FROM leads WHERE user_id='dany'").fetchone()
+    row = conn.execute("SELECT company_name, is_premium, contacts_json, category, selling_angle FROM leads WHERE user_id='owner'").fetchone()
     conn.close()
     assert row is not None
     assert row[1] == 1
@@ -110,8 +110,8 @@ def test_partner_fit_score_is_derived_from_dimensions(monkeypatch):
     assert result['confidence'] == 'media'
 
 
-def test_save_lead_endpoint_populates_flags(as_dany, app_with_db):
-    r = as_dany.post('/api/leads/save', data=json.dumps({
+def test_save_lead_endpoint_populates_flags(as_owner, app_with_db):
+    r = as_owner.post('/api/leads/save', data=json.dumps({
         'name': 'A', 'website': 'https://a.example', 'email': 'info@a.example',
         'category': '🏨 Hotel', 'query': 'test',
     }), content_type='application/json')
@@ -123,12 +123,12 @@ def test_save_lead_endpoint_populates_flags(as_dany, app_with_db):
     assert row[1] == '🏨 Hotel'
 
 
-def test_draft_email_endpoint_caches(as_dany, app_with_db, monkeypatch):
+def test_draft_email_endpoint_caches(as_owner, app_with_db, monkeypatch):
     _install_mocks(monkeypatch, ai_json={
         'subject': 'Partnership Portofino',
         'body': 'Gentili, vi scrivo da CIBO Marine…\n\nUn saluto,\nTeam CIBO Marine — Portofino',
     })
-    as_dany.post('/api/leads/save', data=json.dumps({
+    as_owner.post('/api/leads/save', data=json.dumps({
         'name': 'Villa X', 'website': 'https://villax.example', 'email': 'info@villax.example',
         'category': '🏨 Hotel', 'query': 'q',
     }), content_type='application/json')
@@ -136,14 +136,14 @@ def test_draft_email_endpoint_caches(as_dany, app_with_db, monkeypatch):
     lid = conn.execute("SELECT id FROM leads").fetchone()[0]
     conn.close()
 
-    r1 = as_dany.post(f'/api/leads/{lid}/draft_email', data=json.dumps({}), content_type='application/json')
+    r1 = as_owner.post(f'/api/leads/{lid}/draft_email', data=json.dumps({}), content_type='application/json')
     assert r1.status_code == 200
     b1 = r1.get_json()
     assert b1['cached'] is False
     assert 'Partnership Portofino' in b1['email']
 
     # Seconda chiamata senza force → cached
-    r2 = as_dany.post(f'/api/leads/{lid}/draft_email', data=json.dumps({}), content_type='application/json')
+    r2 = as_owner.post(f'/api/leads/{lid}/draft_email', data=json.dumps({}), content_type='application/json')
     assert r2.get_json()['cached'] is True
 
 

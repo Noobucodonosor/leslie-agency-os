@@ -45,7 +45,7 @@ La chiave Google Maps Platform del progetto era autorizzata su 33 API (direction
 ## 🚨 Secrets
 
 ### `SECRET_KEY` è obbligatoria in produzione
-Dal fix 2026-07-02, `app.py` solleva `RuntimeError` allo startup se `SECRET_KEY` non è impostata E `FLASK_ENV != development`. Motivo: il fallback statico precedente (`"leslie-default-marine-secret-2026"`) era hardcoded nel repo → chiunque poteva forgiare cookie di sessione con `user_id=dany`.
+Dal fix 2026-07-02, `app.py` solleva `RuntimeError` allo startup se `SECRET_KEY` non è impostata E `FLASK_ENV != development`. Motivo: il fallback statico precedente (`"leslie-default-marine-secret-2026"`) era hardcoded nel repo → chiunque poteva forgiare cookie di sessione con `user_id=owner`.
 
 Se il deploy fallisce con `RuntimeError: SECRET_KEY mancante`, iniettare il secret in Cloud Run (`deploy.sh` lo fa già tramite `--update-secrets`). **Non** reintrodurre un fallback in chiaro nel codice.
 
@@ -73,7 +73,7 @@ conn.execute("SELECT * FROM leads WHERE user_id=?", (uid,))
 ```
 
 ### `get_user_id()` non solleva mai
-Fallback silenzioso a `'dany'`. Se qualcosa va storto (session persa, header mancante), le request finiscono sui dati di `dany`. Verifica sempre in produzione via log — `app.py:770` stampa un warning quando fa fallback.
+Fallback silenzioso a `'owner'`. Se qualcosa va storto (session persa, header mancante), le request finiscono sui dati di `owner`. Verifica sempre in produzione via log — `app.py:770` stampa un warning quando fa fallback.
 
 ### La whitelist `VALID_USER_IDS` è hardcoded in due punti
 `app.py:756` (whitelist) e `app.py:787` (`api_login`). Aggiungere un utente richiede modifica in entrambi.
@@ -151,7 +151,7 @@ Hardcoded in `scraper.py:12` **e** proposta come impostazione utente in `app.py:
 
 ### Le query espanse si persistono in `user_settings.settings.custom_queries`
 Dal fix 2026-07-02, `generate_queries` NON muta più `QUERY_POOLS` globale: le query prodotte da `expand_niche_queries` finiscono in `custom_queries[cat]` per l'utente, via `_save_custom_queries`. Questo ha due effetti:
-- **No leak cross-user**: `dany` non "regala" più le sue query espanse ad `alessio`.
+- **No leak cross-user**: `owner` non "regala" più le sue query espanse ad `partner`.
 - **Persistenza**: sopravvivono al restart del container.
 
 Se in futuro si aggiunge un altro punto di generazione query dinamiche, **non** tornare al pattern `QUERY_POOLS[cat].extend(...)`.

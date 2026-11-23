@@ -3,7 +3,7 @@
 - **Stato:** Accettato
 - **Priorità:** P0 — Critica
 - **Data:** 2026-11-23
-- **Autori:** Dany (`Noobucodonosor`)
+- **Autori:** `Noobucodonosor`
 - **Fonti:** `app.py`, `static/app.js`, `tests/test_funnel_endpoints.py`
 
 ---

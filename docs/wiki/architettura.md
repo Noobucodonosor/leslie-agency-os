@@ -65,9 +65,9 @@ Non c'è un vero sistema di auth. `get_user_id()` in `app.py:760` legge da:
 1. `session['user_id']` (via `/api/auth/login`)
 2. Header `X-User-ID`
 3. Query param `?user_id=...`
-4. Fallback: `'dany'`
+4. Fallback: `'owner'`
 
-Whitelist hard: solo `{'dany', 'alessio'}`. Tutti i dati sono isolati per `user_id` sia in query che in INSERT.
+Whitelist hard: solo `{'owner', 'partner'}`. Tutti i dati sono isolati per `user_id` sia in query che in INSERT.
 Vedi [[decisioni]] su perché non c'è un vero login.
 
 ## Concorrenza

@@ -32,7 +32,7 @@ def init_commerce_tables(conn):
 
     c.execute('''CREATE TABLE IF NOT EXISTS catalog_offers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        owner_id TEXT NOT NULL DEFAULT 'dany',
+        owner_id TEXT NOT NULL DEFAULT 'owner',
         slug TEXT NOT NULL,
         title TEXT NOT NULL,
         category TEXT NOT NULL DEFAULT 'boat_tour',
@@ -54,7 +54,7 @@ def init_commerce_tables(conn):
 
     c.execute('''CREATE TABLE IF NOT EXISTS partner_venues (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        owner_id TEXT NOT NULL DEFAULT 'dany',
+        owner_id TEXT NOT NULL DEFAULT 'owner',
         slug TEXT NOT NULL,
         name TEXT NOT NULL,
         venue_type TEXT NOT NULL DEFAULT 'restaurant',
@@ -75,7 +75,7 @@ def init_commerce_tables(conn):
 
     c.execute('''CREATE TABLE IF NOT EXISTS partner_portals (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        owner_id TEXT NOT NULL DEFAULT 'dany',
+        owner_id TEXT NOT NULL DEFAULT 'owner',
         slug TEXT NOT NULL,
         partner_name TEXT NOT NULL,
         partner_type TEXT DEFAULT 'accommodation',
@@ -93,7 +93,7 @@ def init_commerce_tables(conn):
 
     c.execute('''CREATE TABLE IF NOT EXISTS bookings_and_quotes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        owner_id TEXT NOT NULL DEFAULT 'dany',
+        owner_id TEXT NOT NULL DEFAULT 'owner',
         public_token TEXT NOT NULL UNIQUE,
         customer_name TEXT NOT NULL,
         customer_contact TEXT DEFAULT '',
@@ -133,11 +133,11 @@ def init_commerce_tables(conn):
     c.execute("CREATE INDEX IF NOT EXISTS idx_venues_owner_type ON partner_venues(owner_id, venue_type)")
     c.execute("CREATE INDEX IF NOT EXISTS idx_portals_slug ON partner_portals(slug)")
 
-    _seed_defaults_if_empty(c, owner_id="dany")
+    _seed_defaults_if_empty(c, owner_id="owner")
     conn.commit()
 
 
-def _seed_defaults_if_empty(cursor, owner_id="dany"):
+def _seed_defaults_if_empty(cursor, owner_id="owner"):
     """Popola il catalogo reale iniziale (Gabri, Massi, Ale, Cosimo + Ristoranti) se vuoto."""
     offers_count = cursor.execute(
         "SELECT COUNT(*) FROM catalog_offers WHERE owner_id=?", (owner_id,)
